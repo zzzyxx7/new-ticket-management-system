@@ -1,11 +1,10 @@
-package com.fuzhou.server.controller;
+package com.fuzhou.server.controller.User;
 
 import com.fuzhou.common.constant.MessageConstant;
 import com.fuzhou.common.exception.CodeFailException;
 import com.fuzhou.common.exception.CodeNotSendException;
 import com.fuzhou.common.utils.MailUtils;
 import com.fuzhou.pojo.dto.UserLoginDTO;
-import com.fuzhou.pojo.entity.User;
 import com.fuzhou.pojo.vo.LoginVO;
 import com.fuzhou.server.service.UserLoginService;
 import org.springframework.beans.factory.annotation.Autowired;

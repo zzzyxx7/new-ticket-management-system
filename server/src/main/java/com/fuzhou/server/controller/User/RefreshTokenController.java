@@ -1,4 +1,4 @@
-package com.fuzhou.server.controller;
+package com.fuzhou.server.controller.User;
 
 import com.fuzhou.common.constant.JwtClaimsConstant; // 导入常量类
 import com.fuzhou.common.result.Result;
@@ -7,7 +7,6 @@ import com.fuzhou.common.utils.RedisUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

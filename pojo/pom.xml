@@ -17,7 +17,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional> <!-- 避免子模块（如 server）强制依赖 -->
+            <optional>true</optional> <!-- 避免子模块（�?server）强制依�?-->
         </dependency>
     </dependencies>
 </project>
