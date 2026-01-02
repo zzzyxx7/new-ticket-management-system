@@ -38,7 +38,7 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
-        <!-- 连接池依赖（必须加，否则启动可能报错） -->
+        <!-- 连接池依赖（必须加，否则启动可能报错�?-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional> <!-- 避免子模块（如 server）强制依赖 -->
+            <optional>true</optional> <!-- 避免子模块（�?server）强制依�?-->
         </dependency>
 
         <dependency>

@@ -44,4 +44,6 @@ public class User {
     private LocalDateTime createTime;
 
     private String image;
+
+    private String city; //我看数据库里user表有这个，但实体类里面没有这个city
 }

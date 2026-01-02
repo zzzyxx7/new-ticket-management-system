@@ -1,4 +1,4 @@
-package com.fuzhou.server.controller;
+package com.fuzhou.server.controller.User;
 
 import com.fuzhou.common.context.BaseContext;
 import com.fuzhou.common.result.Result;

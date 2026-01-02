@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fuzhou.server.mapper.AdminUserMapper">
+
+    <!-- 分页查询用户列表 -->
+    <select id="pageQuery" resultType="com.fuzhou.pojo.vo.AdminUserVO">
+        SELECT
+        id,
+        name,
+        account,
+        email,
+        status,
+        image,
+        create_time AS createTime,
+        city
+        FROM user
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="account != null and account != ''">
+                AND account = #{account}
+            </if>
+            <if test="email != null and email != ''">
+                AND email LIKE CONCAT('%', #{email}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据ID查询用户详情 -->
+    <select id="getById" resultType="com.fuzhou.pojo.vo.AdminUserVO">
+        SELECT
+            id,
+            name,
+            account,
+            email,
+            status,
+            image,
+            create_time AS createTime,
+            city
+        FROM user
+        WHERE id = #{id}
+    </select>
+
+    <!-- 更新用户信息 -->
+    <update id="update">
+        UPDATE user
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="account != null and account != ''">
+                account = #{account},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="city != null">
+                city = #{city},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新用户状态 -->
+    <update id="updateStatus">
+        UPDATE user
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+
+</mapper>
