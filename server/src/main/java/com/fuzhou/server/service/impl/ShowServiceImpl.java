@@ -79,6 +79,7 @@ public class ShowServiceImpl implements ShowService {
         // 5. 封装分页结果（此时showList是Page类型，强转生效）
         Page<ShowVO> page = (Page<ShowVO>) showList;
         return new PageResult(page.getTotal(), page.getResult());
+
     }
 
 }

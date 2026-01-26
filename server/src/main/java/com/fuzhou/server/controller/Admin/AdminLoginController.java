@@ -1,22 +1,27 @@
-package com.fuzhou.server.controller.User;
+package com.fuzhou.server.controller.Admin;
 
 import com.fuzhou.common.context.BaseContext;
 import com.fuzhou.common.result.Result;
 import com.fuzhou.common.utils.JwtUtil;
 import com.fuzhou.common.utils.RedisUtil;
+import com.fuzhou.pojo.dto.UserLoginDTO;
 import com.fuzhou.pojo.vo.LoginVO;
+import com.fuzhou.server.service.UserLoginService;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-
 @RestController
-@RequestMapping("/user/login/logout")
-public class LogoutController {
+@RequestMapping("/admin/login")
+@Slf4j
+public class AdminLoginController {
+    @Autowired
+    private UserLoginService userLoginService;
     @Resource
     private JwtUtil jwtUtil;
     @Resource
@@ -24,7 +29,18 @@ public class LogoutController {
     @Value("${fuzhou.jwt.user-secret-key}")
     private String accessSecretKey;
     private static final String REDIS_KEY_USER_INFO = "user:info:";
+
     @PostMapping
+    public Result login(@RequestBody UserLoginDTO userLoginDTO){
+        userLoginDTO.setType(10);
+        LoginVO loginVO = userLoginService.login(userLoginDTO);
+        if(loginVO==null || loginVO.getMsg()==null || loginVO.getMsg()=="") return Result.error("登入失败");
+        if(loginVO.getMsg() == "成功注册") return Result.success("注册成功");
+        return Result.success(loginVO);
+    }
+
+
+    @PostMapping("/exit")
     public Result<String> logout(@RequestBody LoginVO request) {
         String accessToken = request.getAccess_token();
         String refreshToken = request.getRefresh_token();

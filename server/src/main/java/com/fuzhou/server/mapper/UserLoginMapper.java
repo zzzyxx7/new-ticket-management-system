@@ -27,4 +27,6 @@ public interface UserLoginMapper {
     UserLoginVO getUser(String email);
 
     Boolean repeat(String account);
+
+    UserLoginVO AdminLogin(UserLoginDTO userLoginDTO);
 }

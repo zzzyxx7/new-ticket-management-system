@@ -81,6 +81,20 @@ public class UserLoginServiceImpl implements UserLoginService {
             loginVO = setToken(userLoginVO, loginVO);
             return loginVO;
         }
+
+        if(userLoginDTO.getType()==10){
+            UserLoginVO userLoginVO = userLoginMapper.AdminLogin(userLoginDTO);
+            if(userLoginVO == null) throw new AccountOrPasswordException("账号或密码错误");
+            if(passwordUtil.verifyPassword(userLoginDTO.getPassword(), userLoginVO.getPassword())){
+                userId = userLoginVO.getId();
+                cacheUserInfo(userId);
+                loginVO = setToken(userLoginVO, loginVO);
+                return loginVO;
+            }
+            else{
+                throw new AccountOrPasswordException("账号或密码错误");
+            }
+        }
         return loginVO;
     }
 
