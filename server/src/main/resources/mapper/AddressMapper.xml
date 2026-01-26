@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fuzhou.server.mapper.AddressMapper">
+    <delete id="deleteAddress">
+        DELETE FROM user_address
+        WHERE id = #{id}
+        AND user_id = #{userId}
+    </delete>
+
+    <select id="getAddress" resultType="com.fuzhou.pojo.vo.AddressVO">
+        SELECT id, full_address, is_default
+        FROM user_address
+        WHERE user_id = #{userId}
+    </select>
+</mapper>

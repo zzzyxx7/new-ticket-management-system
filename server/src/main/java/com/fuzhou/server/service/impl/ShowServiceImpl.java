@@ -1,7 +1,7 @@
 package com.fuzhou.server.service.impl;
 
 import com.fuzhou.common.result.PageResult;
-import com.fuzhou.pojo.dto.HomePageDTO;
+import com.fuzhou.pojo.dto.PageDTO;
 import com.fuzhou.pojo.vo.ShowVO;
 import com.fuzhou.server.mapper.ShowActorMapper;
 import com.fuzhou.server.mapper.ShowMapper;
@@ -29,7 +29,7 @@ public class ShowServiceImpl implements ShowService {
     private ShowActorMapper showActorMapper;
 
     @Override
-    public PageResult show(HomePageDTO homePageDTO, HttpServletRequest request) {
+    public PageResult show(PageDTO homePageDTO, HttpServletRequest request) {
         // 1. 先处理token/登录逻辑（所有前置操作）
         Boolean isLogin = (Boolean) request.getAttribute("isLogin");
         Long loginUserId = (Long) request.getAttribute("loginUserId");
