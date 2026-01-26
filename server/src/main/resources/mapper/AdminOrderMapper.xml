@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fuzhou.server.mapper.AdminOrderMapper">
+
+    <!--
+        1. 管理端分页查询订单列表
+        使用动态SQL：根据前端传入的条件，动态拼接WHERE子句
+        注意：管理端可以查询所有订单，userId是可选的筛选条件
+    -->
+    <select id="pageQuery" resultType="com.fuzhou.pojo.vo.OrderVO">
+        SELECT
+        o.id,
+        o.order_no as orderNo,
+        o.session_id as sessionId,
+        o.user_id as userId,
+        o.price,
+        o.alipay_trade_no as alipayTradeNo,
+        o.order_status as orderStatus,
+        o.subject,
+        o.body,
+        o.create_time as createTime,
+        o.update_time as updateTime,
+        o.pay_time as payTime,
+        -- 关联查询用户信息
+        u.name as userName,
+        u.account as userAccount,
+        u.email as userEmail,
+        -- 关联查询场次信息
+        s.start_time as sessionStartTime,
+        s.show_id as showId,
+        -- 关联查询演出信息
+        sh.title as showTitle,
+        sh.venue_name as venueName,
+        sh.city
+        FROM `order` o
+        LEFT JOIN user u ON o.user_id = u.id
+        LEFT JOIN sessions s ON o.session_id = s.id
+        LEFT JOIN `show` sh ON s.show_id = sh.id
+
+        <!--
+            动态WHERE子句：
+            <where> 标签会自动处理：
+            1. 如果所有<if>都不满足，不会生成WHERE
+            2. 如果第一个<if>满足，会自动去掉开头的AND
+            3. 如果中间某个<if>不满足，会自动处理AND的位置
+
+            管理端特点：userId是可选的，不传就查所有订单
+        -->
+        <where>
+            <!-- 订单状态筛选：如果orderStatus不为null，才拼接这个条件 -->
+            <if test="orderStatus != null">
+                AND o.order_status = #{orderStatus}
+            </if>
+
+            <!-- 订单号模糊查询：如果orderNo不为空，才拼接这个条件 -->
+            <if test="orderNo != null and orderNo != ''">
+                AND o.order_no LIKE CONCAT('%', #{orderNo}, '%')
+            </if>
+
+            <!-- 用户ID筛选：管理端可选，不传就查所有用户的订单 -->
+            <if test="userId != null">
+                AND o.user_id = #{userId}
+            </if>
+
+            <!-- 开始时间筛选：如果beginTime不为空，才拼接这个条件 -->
+            <if test="beginTime != null and beginTime != ''">
+                AND o.create_time &gt;= #{beginTime}
+                <!-- 注意：XML中 > 要用 &gt; 表示，< 要用 &lt; 表示 -->
+            </if>
+
+            <!-- 结束时间筛选：如果endTime不为空，才拼接这个条件 -->
+            <if test="endTime != null and endTime != ''">
+                AND o.create_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+
+    <!--
+        2. 管理端根据ID查询订单详情
+        不需要动态SQL，直接查询
+        管理端可以查询任意订单，不需要权限校验（在Service层做）
+    -->
+    <select id="getById" resultType="com.fuzhou.pojo.vo.OrderVO">
+        SELECT
+            o.id,
+            o.order_no as orderNo,
+            o.session_id as sessionId,
+            o.user_id as userId,
+            o.price,
+            o.alipay_trade_no as alipayTradeNo,
+            o.order_status as orderStatus,
+            o.subject,
+            o.body,
+            o.create_time as createTime,
+            o.update_time as updateTime,
+            o.pay_time as payTime,
+            u.name as userName,
+            u.account as userAccount,
+            u.email as userEmail,
+            s.start_time as sessionStartTime,
+            s.show_id as showId,
+            sh.title as showTitle,
+            sh.venue_name as venueName,
+            sh.city
+        FROM `order` o
+                 LEFT JOIN user u ON o.user_id = u.id
+                 LEFT JOIN sessions s ON o.session_id = s.id
+                 LEFT JOIN `show` sh ON s.show_id = sh.id
+        WHERE o.id = #{id}
+    </select>
+
+    <!--
+        3. 管理端更新订单信息
+        使用动态SQL：只更新传入的字段，没传的字段不更新
+        管理端可以修改订单的多个字段（状态、金额、支付宝交易号等）
+    -->
+    <update id="update" parameterType="com.fuzhou.pojo.entity.Order">
+        UPDATE `order`
+        <!--
+            <set> 标签会自动处理：
+            1. 自动在字段之间加逗号
+            2. 自动去掉最后一个逗号
+            3. 如果所有<if>都不满足，不会生成SET子句（会报错，但实际不会发生）
+        -->
+        <set>
+            <!-- 如果orderStatus不为null，才更新这个字段 -->
+            <if test="orderStatus != null">
+                order_status = #{orderStatus},
+            </if>
+
+            <!-- 如果price不为null，才更新这个字段 -->
+            <if test="price != null">
+                price = #{price},
+            </if>
+
+            <!-- 如果alipayTradeNo不为空，才更新这个字段 -->
+            <if test="alipayTradeNo != null and alipayTradeNo != ''">
+                alipay_trade_no = #{alipayTradeNo},
+            </if>
+
+            <!-- 如果subject不为空，才更新这个字段 -->
+            <if test="subject != null and subject != ''">
+                subject = #{subject},
+            </if>
+
+            <!-- 如果body不为空，才更新这个字段 -->
+            <if test="body != null and body != ''">
+                body = #{body},
+            </if>
+
+            <!-- 如果payTime不为null，才更新这个字段 -->
+            <if test="payTime != null">
+                pay_time = #{payTime},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>
