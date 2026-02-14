@@ -28,4 +28,15 @@ public class Sessions {
      * 场次持续时间
      */
     private Duration duration;
+
+    /**
+     * 剩余库存（可售票数）
+     */
+    private Integer stock;
+
+    /**
+     * 初始库存（总票数）
+     * 用于计算已售数量：已售 = 初始库存 - 剩余库存
+     */
+    private Integer totalStock;
 }

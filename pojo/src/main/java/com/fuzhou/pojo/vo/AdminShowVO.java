@@ -1,14 +1,15 @@
-package com.fuzhou.pojo.entity;
+package com.fuzhou.pojo.vo;
+
 import lombok.Data;
 
 /**
- * 节目实体类
- * 对应数据库 show 表
+ * 管理端演出详情VO
+ * 包含演出的所有字段以及关联的分类名称
  */
 @Data
-public class Show {
+public class AdminShowVO {
     /**
-     * 主键 ID（自增）
+     * 主键 ID
      */
     private Long id;
 
@@ -18,9 +19,14 @@ public class Show {
     private String title;
 
     /**
-     * 关联分类 ID（对应 sort 表的 id）
+     * 关联分类 ID
      */
     private Long sortId;
+
+    /**
+     * 分类名称（关联查询）
+     */
+    private String sortName;
 
     /**
      * 省份
@@ -56,4 +62,17 @@ public class Show {
      * 节目封面图
      */
     private String image;
+
+    /**
+     * 剩余库存（该演出下所有场次的剩余库存总和）
+     */
+    private Integer stock;
+
+    /**
+     * 总库存（该演出下所有场次的初始库存总和）
+     * 用于计算已售数量：已售 = totalStock - stock
+     */
+    private Integer totalStock;
 }
+
+

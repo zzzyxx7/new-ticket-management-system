@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fuzhou.server.mapper.SessionsMapper">
+
+    <!-- 根据演出ID查询场次列表 -->
+    <select id="selectByShowId" resultType="com.fuzhou.pojo.entity.Sessions">
+        SELECT id, show_id as showId, start_time as startTime, duration, 
+               stock, total_stock as totalStock
+        FROM sessions
+        WHERE show_id = #{showId}
+        ORDER BY start_time ASC
+    </select>
+
+    <!-- 根据ID查询场次 -->
+    <select id="selectById" resultType="com.fuzhou.pojo.entity.Sessions">
+        SELECT id, show_id as showId, start_time as startTime, duration,
+               stock, total_stock as totalStock
+        FROM sessions
+        WHERE id = #{id}
+    </select>
+
+    <!-- 扣减库存（使用乐观锁，基于业务字段） -->
+    <update id="decreaseStock">
+        UPDATE sessions
+        SET stock = stock - #{quantity}
+        WHERE id = #{sessionId}
+          AND stock >= #{quantity}
+    </update>
+
+    <!-- 回退库存 -->
+    <update id="increaseStock">
+        UPDATE sessions
+        SET stock = stock + #{quantity}
+        WHERE id = #{sessionId}
+          AND stock + #{quantity} &lt;= total_stock
+    </update>
+
+</mapper>
+

@@ -2,10 +2,92 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fuzhou.server.mapper.ShowMapper">
 
+    <!-- 根据城市查询演出列表 -->
     <select id="selectByCity" resultType="com.fuzhou.pojo.vo.ShowVO">
-        SELECT s.id, s.title, s.image, s.city, s.venue_name, sort_id, so.name as sort_name
-        FROM `show` as s
-        LEFT JOIN `sort` as so ON s.sort_id = so.id
-        WHERE city = #{city}
+        SELECT s.id, s.title, s.image, s.city, s.venue_name as venueName, 
+               s.sort_id as sortId, so.name as sortName
+        FROM `show` s
+        LEFT JOIN `sort` so ON s.sort_id = so.id
+        WHERE s.city = #{city}
+        ORDER BY s.id DESC
+    </select>
+
+    <!-- 根据城市和分类列表查询演出（首页推荐） -->
+    <select id="selectByCityAndCategories" resultType="com.fuzhou.pojo.vo.ShowVO">
+        SELECT s.id, s.title, s.image, s.city, s.venue_name as venueName,
+               s.sort_id as sortId, so.name as sortName
+        FROM `show` s
+        LEFT JOIN `sort` so ON s.sort_id = so.id
+        WHERE s.city = #{city}
+          AND so.name IN
+          <foreach collection="categories" item="category" open="(" separator="," close=")">
+              #{category}
+          </foreach>
+        ORDER BY s.id DESC
+        LIMIT 20
+    </select>
+
+    <!-- 搜索演出（匹配演出名/明星名） -->
+    <select id="searchByNameAndCondition" resultType="com.fuzhou.pojo.vo.ShowVO">
+        SELECT DISTINCT s.id, s.title, s.image, s.city, s.venue_name as venueName,
+               s.sort_id as sortId, so.name as sortName
+        FROM `show` s
+        LEFT JOIN `sort` so ON s.sort_id = so.id
+        LEFT JOIN show_actor sa ON s.id = sa.show_id
+        LEFT JOIN actor a ON sa.actor_id = a.id
+        <where>
+            <!-- 匹配演出名或明星名 -->
+            <if test="keyword != null and keyword != ''">
+                AND (s.title LIKE CONCAT('%', #{keyword}, '%')
+                     OR a.name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <!-- 城市筛选 -->
+            <if test="city != null and city != ''">
+                AND s.city = #{city}
+            </if>
+            <!-- 分类筛选 -->
+            <if test="sortId != null">
+                AND s.sort_id = #{sortId}
+            </if>
+        </where>
+        ORDER BY s.id DESC
+    </select>
+
+    <!-- 条件查询演出（城市、分类） -->
+    <select id="selectByCondition" resultType="com.fuzhou.pojo.vo.ShowVO">
+        SELECT s.id, s.title, s.image, s.city, s.venue_name as venueName,
+               s.sort_id as sortId, so.name as sortName
+        FROM `show` s
+        LEFT JOIN `sort` so ON s.sort_id = so.id
+        <where>
+            <if test="city != null and city != ''">
+                AND s.city = #{city}
+            </if>
+            <if test="sortId != null">
+                AND s.sort_id = #{sortId}
+            </if>
+        </where>
+        ORDER BY s.id DESC
+    </select>
+
+    <!-- 根据ID查询演出详情 -->
+    <select id="selectDetailById" resultType="com.fuzhou.pojo.vo.ShowDetailVO">
+        SELECT s.id, s.title, s.image, s.province, s.city, s.district,
+               s.venue_name as venueName, s.detail_address as detailAddress,
+               s.full_address as fullAddress, s.sort_id as sortId, so.name as sortName
+        FROM `show` s
+        LEFT JOIN `sort` so ON s.sort_id = so.id
+        WHERE s.id = #{id}
+    </select>
+
+    <!-- 批量查询演出库存（所有场次库存之和） -->
+    <select id="selectStockByShowIds" resultType="java.util.HashMap">
+        SELECT s.show_id as showId, COALESCE(SUM(s.stock), 0) as totalStock
+        FROM sessions s
+        WHERE s.show_id IN
+        <foreach collection="showIds" item="showId" open="(" separator="," close=")">
+            #{showId}
+        </foreach>
+        GROUP BY s.show_id
     </select>
 </mapper>
