@@ -70,6 +70,15 @@ fuzhou:
     access-key-secret: ${fuzhou.alioss.access-key-secret}
     bucket-name: ${fuzhou.alioss.bucket-name}
 
+  alipay:
+    app-id: ${fuzhou.alipay.app-id}
+    private-key: ${fuzhou.alipay.private-key}
+    public-key: ${fuzhou.alipay.public-key}
+    gateway: ${fuzhou.alipay.gateway}
+    return-url: ${fuzhou.alipay.return-url}
+    notify-url: ${fuzhou.alipay.notify-url}
+
+
 doubao:
   api-key: c6bf13e6-f8d9-4302-a535-b45fa7114e79
   model-id: doubao-1.5-pro-32k-250115

@@ -10,8 +10,11 @@ public class Order {
     private Long sessionId;           // 场次ID
     private Long userId;              // 用户ID
     private BigDecimal price;         // 订单金额
+    private Integer quantity;         // 购买数量
+    private BigDecimal totalPrice;    // 总价格 = 单价 × 数量
     private String alipayTradeNo;     // 支付宝交易号
-    private Integer orderStatus;      // 订单状态：0-待支付 1-支付成功 2-支付失败 3-已取消 4-已退款
+    private Integer orderStatus;      // 订单状态 0-未完成订单 1-以完成订单 2-退款订单 3-取消订单
+    private Integer paymentStatus;    // 支付状态：0-未支付 1-已支付
     private String subject;           // 订单标题
     private String body;              // 订单描述
     private LocalDateTime createTime; // 创建时间

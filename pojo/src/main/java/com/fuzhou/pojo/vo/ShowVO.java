@@ -46,6 +46,11 @@ public class ShowVO {
      */
     private List<ActorVO> actors;
 
+    /**
+     * 是否有库存（用户端只返回布尔值，不返回具体数量）
+     */
+    private Boolean hasStock;
+
     // 嵌套VO：演员展示专用（仅保留前端需要的字段，避免返回冗余的人气值等）
     @Data
     public static class ActorVO {

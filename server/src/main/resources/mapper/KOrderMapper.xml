@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fuzhou.server.mapper.KOrderMapper">
+    <update id="updateOrder">
+        update order set order_status = 1 and payment_status = 1 where id = #{id} and user_id = #{userId}
+    </update>
+
+    <select id="getOrder" resultType="com.fuzhou.pojo.dto.OrderModel">
+        select id, user_id, order_status, payment_status, session_id, total_price, subject from order where id = #{id}
+    </select>
+</mapper>

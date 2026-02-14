@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fuzhou.server.mapper.OrderMapper">
+
+    <insert id="insert" parameterType="com.fuzhou.pojo.entity.Order" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `order` (
+            order_no,
+            session_id,
+            user_id,
+            price,
+            alipay_trade_no,
+            order_status,
+            subject,
+            body,
+            create_time,
+            update_time,
+            pay_time
+        ) VALUES (
+            #{orderNo},
+            #{sessionId},
+            #{userId},
+            #{price},
+            #{alipayTradeNo},
+            #{orderStatus},
+            #{subject},
+            #{body},
+            #{createTime},
+            #{updateTime},
+            #{payTime}
+        )
+    </insert>
+
+    <select id="getById" resultType="com.fuzhou.pojo.entity.Order">
+        SELECT
+            id,
+            order_no as orderNo,
+            session_id as sessionId,
+            user_id as userId,
+            price,
+            alipay_trade_no as alipayTradeNo,
+            order_status as orderStatus,
+            subject,
+            body,
+            create_time as createTime,
+            update_time as updateTime,
+            pay_time as payTime
+        FROM `order`
+        WHERE id = #{id}
+    </select>
+
+</mapper>
+
+
+
