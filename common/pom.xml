@@ -66,6 +66,13 @@
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-sdk-java</artifactId>
         </dependency>
+
+        <!-- 供 IpUtil 等工具使用，运行时由 server 提供 -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 

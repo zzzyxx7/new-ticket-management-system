@@ -4,7 +4,7 @@
 
     <!-- 根据演出ID查询场次列表 -->
     <select id="selectByShowId" resultType="com.fuzhou.pojo.entity.Sessions">
-        SELECT id, show_id as showId, start_time as startTime, duration, 
+        SELECT id, show_id as showId, price, start_time as startTime, duration,
                stock, total_stock as totalStock
         FROM sessions
         WHERE show_id = #{showId}
@@ -13,7 +13,7 @@
 
     <!-- 根据ID查询场次 -->
     <select id="selectById" resultType="com.fuzhou.pojo.entity.Sessions">
-        SELECT id, show_id as showId, start_time as startTime, duration,
+        SELECT id, show_id as showId, price, start_time as startTime, duration,
                stock, total_stock as totalStock
         FROM sessions
         WHERE id = #{id}

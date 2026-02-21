@@ -11,9 +11,12 @@ public class OrderVO {
     private String orderNo;           // 订单编号
     private Long sessionId;           // 场次ID
     private Long userId;              // 用户ID
+    private Integer quantity;         // 购买数量
     private BigDecimal price;         // 订单金额
+    private BigDecimal totalPrice;    // 总金额
     private String alipayTradeNo;     // 支付宝交易号
     private Integer orderStatus;      // 订单状态
+    private Integer paymentStatus;    // 支付状态
     private String subject;           // 订单标题
     private String body;              // 订单描述
     private LocalDateTime createTime;

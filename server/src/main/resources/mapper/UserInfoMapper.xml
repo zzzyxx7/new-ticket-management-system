@@ -23,7 +23,7 @@
     </update>
 
     <select id="getUserInfo" resultType="com.fuzhou.pojo.entity.User">
-        SELECT id, name, account, email, image, create_time, status
+        SELECT id, name, account, email, image, create_time, status, city
         FROM user
         WHERE id = #{id}
     </select>

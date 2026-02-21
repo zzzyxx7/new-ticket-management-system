@@ -39,6 +39,9 @@ public interface ShowMapper {
 
     ShowDetailVO selectDetailById(Long id);
 
+    /** 根据演出ID查询演出名称（用于订单标题等） */
+    String getTitleById(@Param("id") Long id);
+
 
      // 批量查询演出库存（所有场次库存之和）
      // 返回 List<Map>，每个 Map 包含 showId 和 totalStock

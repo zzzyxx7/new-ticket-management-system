@@ -18,6 +18,13 @@ spring:
       port: ${fuzhou.redis.port}
       database: ${fuzhou.redis.database}
 
+  rabbitmq:
+    host: ${fuzhou.rabbitmq.host}
+    port: ${fuzhou.rabbitmq.port}
+    username: ${fuzhou.rabbitmq.username}
+    password: ${fuzhou.rabbitmq.password}
+    virtual-host: ${fuzhou.rabbitmq.virtual-host:/}
+
   mail:
      host:  ${fuzhou.mail.host}
      username: ${fuzhou.mail.username}

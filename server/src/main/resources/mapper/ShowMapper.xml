@@ -70,6 +70,11 @@
         ORDER BY s.id DESC
     </select>
 
+    <!-- 根据演出ID查询演出名称 -->
+    <select id="getTitleById" resultType="java.lang.String">
+        SELECT title FROM `show` WHERE id = #{id}
+    </select>
+
     <!-- 根据ID查询演出详情 -->
     <select id="selectDetailById" resultType="com.fuzhou.pojo.vo.ShowDetailVO">
         SELECT s.id, s.title, s.image, s.province, s.city, s.district,

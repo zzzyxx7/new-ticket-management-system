@@ -1,5 +1,6 @@
 package com.fuzhou.pojo.entity;
 import lombok.Data;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Duration;
 
@@ -18,6 +19,11 @@ public class Sessions {
      * 关联节目 ID（对应 show 表的 id）
      */
     private Long showId;
+
+    /**
+     * 场次单价（元）
+     */
+    private BigDecimal price;
 
     /**
      * 场次开始时间

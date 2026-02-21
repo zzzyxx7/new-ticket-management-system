@@ -7,9 +7,12 @@
             order_no,
             session_id,
             user_id,
+            quantity,
             price,
+            total_price,
             alipay_trade_no,
             order_status,
+            payment_status,
             subject,
             body,
             create_time,
@@ -19,9 +22,12 @@
             #{orderNo},
             #{sessionId},
             #{userId},
+            #{quantity},
             #{price},
+            #{totalPrice},
             #{alipayTradeNo},
             #{orderStatus},
+            #{paymentStatus},
             #{subject},
             #{body},
             #{createTime},
@@ -36,9 +42,12 @@
             order_no as orderNo,
             session_id as sessionId,
             user_id as userId,
+            quantity,
             price,
+            total_price as totalPrice,
             alipay_trade_no as alipayTradeNo,
             order_status as orderStatus,
+            payment_status as paymentStatus,
             subject,
             body,
             create_time as createTime,
@@ -47,6 +56,97 @@
         FROM `order`
         WHERE id = #{id}
     </select>
+
+    <!-- 用户端分页查询自己的订单 -->
+    <select id="pageQueryByUser" resultType="com.fuzhou.pojo.vo.OrderVO">
+        SELECT
+        o.id,
+        o.order_no as orderNo,
+        o.session_id as sessionId,
+        o.user_id as userId,
+        o.quantity,
+        o.price,
+        o.total_price as totalPrice,
+        o.alipay_trade_no as alipayTradeNo,
+        o.order_status as orderStatus,
+        o.payment_status as paymentStatus,
+        o.subject,
+        o.body,
+        o.create_time as createTime,
+        o.update_time as updateTime,
+        o.pay_time as payTime,
+        u.name as userName,
+        u.account as userAccount,
+        u.email as userEmail,
+        s.start_time as sessionStartTime,
+        s.show_id as showId,
+        sh.title as showTitle,
+        sh.venue_name as venueName,
+        sh.city
+        FROM `order` o
+        LEFT JOIN user u ON o.user_id = u.id
+        LEFT JOIN sessions s ON o.session_id = s.id
+        LEFT JOIN `show` sh ON s.show_id = sh.id
+        <where>
+            o.user_id = #{userId}
+            <if test="orderStatus != null">
+                AND o.order_status = #{orderStatus}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND o.order_no LIKE CONCAT('%', #{orderNo}, '%')
+            </if>
+            <if test="beginTime != null and beginTime != ''">
+                AND o.create_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND o.create_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+
+    <!-- 用户端按订单ID + 用户ID查询（防止越权） -->
+    <select id="getByIdAndUser" resultType="com.fuzhou.pojo.vo.OrderVO">
+        SELECT
+        o.id,
+        o.order_no as orderNo,
+        o.session_id as sessionId,
+        o.user_id as userId,
+        o.quantity,
+        o.price,
+        o.total_price as totalPrice,
+        o.alipay_trade_no as alipayTradeNo,
+        o.order_status as orderStatus,
+        o.payment_status as paymentStatus,
+        o.subject,
+        o.body,
+        o.create_time as createTime,
+        o.update_time as updateTime,
+        o.pay_time as payTime,
+        u.name as userName,
+        u.account as userAccount,
+        u.email as userEmail,
+        s.start_time as sessionStartTime,
+        s.show_id as showId,
+        sh.title as showTitle,
+        sh.venue_name as venueName,
+        sh.city
+        FROM `order` o
+        LEFT JOIN user u ON o.user_id = u.id
+        LEFT JOIN sessions s ON o.session_id = s.id
+        LEFT JOIN `show` sh ON s.show_id = sh.id
+        WHERE o.id = #{id}
+          AND o.user_id = #{userId}
+    </select>
+
+    <!-- 更新订单状态（用户取消订单） -->
+    <update id="updateStatus">
+        UPDATE `order`
+        SET order_status = #{orderStatus},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </update>
 
 </mapper>
 

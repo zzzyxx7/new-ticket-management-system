@@ -7,8 +7,10 @@ import com.fuzhou.pojo.dto.CreateOrderDTO;
 import com.fuzhou.pojo.dto.PageDTO;
 import com.fuzhou.pojo.vo.ShowDetailVO;
 import com.fuzhou.pojo.vo.ShowVO;
+import com.fuzhou.pojo.entity.Sessions;
+import com.fuzhou.server.mq.TicketOrderSender;
+import com.fuzhou.server.service.SessionsService;
 import com.fuzhou.server.service.ShowService;
-import com.fuzhou.server.service.UserOrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,10 @@ public class ShowController {
     private ShowService showService;
 
     @Autowired
-    private UserOrderService userOrderService;
+    private TicketOrderSender ticketOrderSender;
+
+    @Autowired
+    private SessionsService sessionsService;
 
 
 //    @GetMapping
@@ -79,13 +84,33 @@ public class ShowController {
     }
 
     /**
-     * 用户抢票 / 创建订单
-     * 路径：POST /user/show/order
+     * 用户抢票 / 创建订单（异步版）
+     * 路径：POST /user/show/buy
+     * 前端拿到“已进入排队”后，可以通过“我的订单列表 / 订单详情”接口轮询查看结果
      */
     @PostMapping("/buy")
     public Result<String> createOrder(@RequestBody CreateOrderDTO dto) {
         Long userId = BaseContext.getCurrentId();
-        log.info("用户[{}]发起抢票，请求参数：{}", userId, dto);
-        return userOrderService.createOrder(dto.getSessionId(), dto.getQuantity(), userId);
+        log.info("用户[{}]发起抢票（异步），请求参数：{}", userId, dto);
+
+        if (dto.getSessionId() == null || dto.getQuantity() == null || dto.getQuantity() <= 0) {
+            return Result.error("参数错误：场次ID和数量不能为空且必须大于0");
+        }
+        if (userId == null) {
+            return Result.error("用户未登录");
+        }
+
+        // 先查库存，不足则直接返回错误，避免接口只返回“等待”而用户不知道失败
+        Sessions session = sessionsService.getById(dto.getSessionId());
+        if (session == null) {
+            return Result.error("场次不存在");
+        }
+        Integer stock = session.getStock();
+        if (stock == null || stock < dto.getQuantity()) {
+            return Result.error("库存不足，当前剩余 " + (stock == null ? 0 : stock) + " 张");
+        }
+
+        ticketOrderSender.send(dto.getSessionId(), dto.getQuantity(), userId);
+        return Result.success("已进入排队，请稍后在“我的订单”中查看是否抢票成功");
     }
 }

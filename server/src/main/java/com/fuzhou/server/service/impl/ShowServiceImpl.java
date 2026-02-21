@@ -9,10 +9,12 @@ import com.fuzhou.pojo.entity.Sessions;
 import com.fuzhou.pojo.vo.ShowDetailVO;
 import com.fuzhou.pojo.vo.ShowVO;
 import com.fuzhou.pojo.vo.SessionsVO;
+import com.fuzhou.common.utils.IpUtil;
 import com.fuzhou.server.mapper.ShowActorMapper;
 import com.fuzhou.server.mapper.ShowMapper;
 import com.fuzhou.server.mapper.SessionsMapper;
 import com.fuzhou.server.mapper.UserInfoMapper;
+import com.fuzhou.server.service.IpLocationService;
 import com.fuzhou.server.service.ShowService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -39,6 +41,8 @@ public class ShowServiceImpl implements ShowService {
     private ShowActorMapper showActorMapper;
     @Autowired
     private SessionsMapper sessionsMapper;
+    @Autowired
+    private IpLocationService ipLocationService;
 
 //    @Override
 //    public PageResult show(PageDTO homePageDTO, HttpServletRequest request) {
@@ -222,30 +226,41 @@ public class ShowServiceImpl implements ShowService {
     }
 
     /**
-     * 确定查询城市（未登录=北京，已登录=用户地址）
+     * 确定查询城市（优先级：手动指定 > IP定位 > 用户地址 > 默认北京）
+     * 已登录用户：优先根据IP定位返回对应地区演出
      */
     private String determineCity(String city, HttpServletRequest request) {
-        // 如果传入了城市参数，优先使用
+        // 1. 如果传入了城市参数，优先使用
         if (city != null && !city.trim().isEmpty()) {
+            log.info("使用手动指定的城市：{}", city);
             return city.trim();
         }
         
-        // 检查是否登录
+        // 2. 获取客户端IP并定位城市（已登录用户优先使用IP定位）
+        String clientIp = IpUtil.getClientIp(request);
+        log.info("客户端IP：{}", clientIp);
+        
+        String ipCity = ipLocationService.getCityByIp(clientIp);
+        if (ipCity != null && !ipCity.trim().isEmpty()) {
+            log.info("IP定位成功，城市：{}", ipCity);
+            return ipCity;
+        }
+        
+        // 3. IP定位失败，检查是否登录，使用用户地址
         Boolean isLogin = (Boolean) request.getAttribute("isLogin");
         Long loginUserId = (Long) request.getAttribute("loginUserId");
         if (isLogin == null) isLogin = false;
         
-        // 已登录：根据用户地址返回对应地区
         if (isLogin && loginUserId != null) {
             String userCity = userMapper.selectCityByUserId(loginUserId);
             if (userCity != null && !userCity.trim().isEmpty()) {
-                log.info("登录用户[{}]，查询城市：{}", loginUserId, userCity);
+                log.info("登录用户[{}]，使用用户地址城市：{}", loginUserId, userCity);
                 return userCity;
             }
         }
         
-        // 默认返回北京
-        log.info("未登录用户或未设置城市，默认查询城市：北京市");
+        // 4. 默认返回北京
+        log.info("IP定位失败且未设置用户地址，默认查询城市：北京市");
         return "北京市";
     }
 
