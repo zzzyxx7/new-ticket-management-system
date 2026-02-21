@@ -25,7 +25,7 @@ public class ShowController {
     @Autowired
     private ShowService showService;
 
-    @Autowired
+    @Autowired(required = false)
     private TicketOrderSender ticketOrderSender;
 
     @Autowired
@@ -110,6 +110,9 @@ public class ShowController {
             return Result.error("库存不足，当前剩余 " + (stock == null ? 0 : stock) + " 张");
         }
 
+        if (ticketOrderSender == null) {
+            return Result.error("抢票功能暂不可用（RabbitMQ 未启用）");
+        }
         ticketOrderSender.send(dto.getSessionId(), dto.getQuantity(), userId);
         return Result.success("已进入排队，请稍后在“我的订单”中查看是否抢票成功");
     }

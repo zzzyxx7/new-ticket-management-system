@@ -8,6 +8,7 @@ import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
@@ -16,9 +17,11 @@ import java.io.IOException;
 
 /**
  * 抢票下单消息消费者：真正执行下单逻辑
+ * 当 fuzhou.rabbitmq.enabled=false 时，不创建此消费者（适用于没有 RabbitMQ 的环境）
  */
 @Component
 @Slf4j
+@ConditionalOnProperty(name = "fuzhou.rabbitmq.enabled", havingValue = "true", matchIfMissing = true)
 public class TicketOrderConsumer {
 
     @Autowired

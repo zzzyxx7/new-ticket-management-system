@@ -3,14 +3,17 @@ package com.fuzhou.server.mq;
 import com.fuzhou.server.config.RabbitMQConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
  * 抢票下单消息发送端
+ * 当 fuzhou.rabbitmq.enabled=false 时，不创建此发送端（适用于没有 RabbitMQ 的环境）
  */
 @Component
 @Slf4j
+@ConditionalOnProperty(name = "fuzhou.rabbitmq.enabled", havingValue = "true", matchIfMissing = true)
 public class TicketOrderSender {
 
     @Autowired

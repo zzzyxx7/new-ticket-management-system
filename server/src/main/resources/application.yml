@@ -24,6 +24,9 @@ spring:
     username: ${fuzhou.rabbitmq.username}
     password: ${fuzhou.rabbitmq.password}
     virtual-host: ${fuzhou.rabbitmq.virtual-host:/}
+    listener:
+      simple:
+        auto-startup: ${fuzhou.rabbitmq.enabled:true}
 
   mail:
      host:  ${fuzhou.mail.host}

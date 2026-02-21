@@ -7,13 +7,16 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * 抢票相关的 RabbitMQ 基础配置：队列、交换机、路由键。
+ * 当 fuzhou.rabbitmq.enabled=false 时，不创建 RabbitMQ 相关 Bean（适用于没有 RabbitMQ 的环境）
  */
 @Configuration
+@ConditionalOnProperty(name = "fuzhou.rabbitmq.enabled", havingValue = "true", matchIfMissing = true)
 public class RabbitMQConfig {
 
     /**
