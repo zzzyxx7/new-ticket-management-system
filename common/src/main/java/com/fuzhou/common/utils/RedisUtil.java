@@ -1,5 +1,6 @@
 package com.fuzhou.common.utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -29,6 +30,72 @@ public class RedisUtil {
     private RedisTemplate<String, Object> redisTemplate;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    private static final ObjectMapper JSON_MAPPER;
+    static {
+        JSON_MAPPER = new ObjectMapper();
+        JSON_MAPPER.findAndRegisterModules();
+        JavaTimeModule timeModule = new JavaTimeModule();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        timeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dtf));
+        timeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dtf));
+        JSON_MAPPER.registerModule(timeModule);
+    }
+
+    /**
+     * 构建缓存 Key（统一格式，参考 ticket-system）
+     * @param parts 各段，如 buildKey("home", "shows", "北京") -> "home:shows:北京"
+     */
+    public String buildKey(String... parts) {
+        return String.join(":", parts);
+    }
+
+    /**
+     * 按 key 前缀删除（用于首页等多城市缓存失效）
+     * @param pattern 如 "home:shows:*"
+     */
+    public long deleteByPattern(String pattern) {
+        try {
+            Set<String> keys = redisTemplate.keys(pattern);
+            if (keys == null || keys.isEmpty()) {
+                return 0;
+            }
+            return redisTemplate.delete(keys);
+        } catch (Exception e) {
+            log.warn("Redis deleteByPattern 失败: pattern={}", pattern, e);
+            return 0;
+        }
+    }
+
+    /**
+     * 存 JSON 并设置过期时间（用于 List/复杂对象，避免泛型擦除）
+     */
+    public <T> boolean setJson(String key, T value, long timeout, TimeUnit unit) {
+        try {
+            String json = JSON_MAPPER.writeValueAsString(value);
+            stringRedisTemplate.opsForValue().set(key, json, timeout, unit);
+            return true;
+        } catch (Exception e) {
+            log.warn("Redis setJson 失败: key={}", key, e);
+            return false;
+        }
+    }
+
+    /**
+     * 取 JSON 并反序列化为指定类型（支持 List&lt;ShowVO&gt; 等）
+     */
+    public <T> T getJson(String key, TypeReference<T> typeRef) {
+        try {
+            String json = stringRedisTemplate.opsForValue().get(key);
+            if (json == null || json.isEmpty()) {
+                return null;
+            }
+            return JSON_MAPPER.readValue(json, typeRef);
+        } catch (Exception e) {
+            log.warn("Redis getJson 失败: key={}", key, e);
+            return null;
+        }
+    }
 
     // ============================ 通用操作 ============================
     /**

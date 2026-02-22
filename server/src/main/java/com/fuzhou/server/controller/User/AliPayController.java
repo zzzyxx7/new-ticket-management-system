@@ -1,5 +1,7 @@
 package com.fuzhou.server.controller.User;
 
+/*
+// ========== 支付模块已注释（待支付负责人完善后恢复） ==========
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.fuzhou.common.context.BaseContext;
@@ -64,10 +66,14 @@ public class AliPayController {
         }
     }
 
-    /*
-参数1：订单号
-参数2：订单金额
-参数3：订单名称
- */
+    // 参数1：订单号
+    // 参数2：订单金额
+    // 参数3：订单名称
 
+}
+// ========== 支付模块注释结束 ==========
+*/
+
+/** 支付模块已注释，占位类以保持编译通过 */
+public class AliPayController {
 }

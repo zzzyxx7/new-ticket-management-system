@@ -58,5 +58,28 @@ public class MailUtils {
             return null;
         }
     }
+
+    /**
+     * 发送自定义主题和正文的邮件（纯文本）
+     * 用于抢票成功、订单通知等
+     */
+    public boolean sendTextEmail(String toEmail, String subject, String textContent) {
+        if (toEmail == null || toEmail.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(javaMailSender.createMimeMessage(), true);
+            helper.setFrom("大麦平台 <" + sendMailer + ">");
+            helper.setTo(toEmail.trim());
+            helper.setSubject(subject != null ? subject : "大麦平台通知");
+            helper.setText(textContent != null ? textContent : "", false);
+            helper.setSentDate(new Date());
+            javaMailSender.send(helper.getMimeMessage());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
 

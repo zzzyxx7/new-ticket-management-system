@@ -1,5 +1,6 @@
 package com.fuzhou.common.utils;
 
+import com.fuzhou.common.constant.JwtClaimsConstant;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,5 +89,36 @@ public class JwtUtil {
     public long getTokenExpireTime(String token, String base64SecretKey) {
         Claims claims = parseToken(token, base64SecretKey);
         return claims.getExpiration().getTime() - System.currentTimeMillis();
+    }
+
+    /**
+     * 验证 Access Token 是否有效
+     */
+    public boolean validateAccessToken(String token) {
+        try {
+            parseAccessToken(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 从 Access Token 获取用户ID
+     */
+    public Long getUserIdFromAccessToken(String token) {
+        Claims claims = parseAccessToken(token);
+        Object userId = claims.get(JwtClaimsConstant.USER_ID);
+        if (userId == null) return null;
+        return Long.valueOf(userId.toString());
+    }
+
+    /**
+     * 从 Access Token 获取角色（USER/ADMIN），旧 token 无 role 时返回 USER
+     */
+    public String getRoleFromAccessToken(String token) {
+        Claims claims = parseAccessToken(token);
+        String role = claims.get(JwtClaimsConstant.ROLE, String.class);
+        return role != null ? role : "USER";
     }
 }

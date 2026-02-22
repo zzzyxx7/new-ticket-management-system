@@ -64,7 +64,7 @@ public class UserLoginServiceImpl implements UserLoginService {
             if(passwordUtil.verifyPassword(userLoginDTO.getPassword(), userLoginVO.getPassword())){
                 userId = userLoginVO.getId();
                 cacheUserInfo(userId);
-                loginVO = setToken(userLoginVO, loginVO);
+                loginVO = setToken(userLoginVO, loginVO, "USER");
                 return loginVO;
             }
             else{
@@ -78,7 +78,7 @@ public class UserLoginServiceImpl implements UserLoginService {
             userId = verify(userLoginDTO.getEmail(), userLoginDTO.getCode());
             if(userId==null || userId == 0L) throw new AccountUnExistException("验证码错误或超时");
             cacheUserInfo(userId);
-            loginVO = setToken(userLoginVO, loginVO);
+            loginVO = setToken(userLoginVO, loginVO, "USER");
             return loginVO;
         }
 
@@ -88,7 +88,7 @@ public class UserLoginServiceImpl implements UserLoginService {
             if(passwordUtil.verifyPassword(userLoginDTO.getPassword(), userLoginVO.getPassword())){
                 userId = userLoginVO.getId();
                 cacheUserInfo(userId);
-                loginVO = setToken(userLoginVO, loginVO);
+                loginVO = setToken(userLoginVO, loginVO, "ADMIN");
                 return loginVO;
             }
             else{
@@ -150,12 +150,13 @@ public class UserLoginServiceImpl implements UserLoginService {
     }
 
 
-    public LoginVO setToken(UserLoginVO user, LoginVO loginVO){
+    public LoginVO setToken(UserLoginVO user, LoginVO loginVO, String role){
         Map<String,Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID,user.getId());
         claims.put(JwtClaimsConstant.USERNAME,user.getName());
         claims.put(JwtClaimsConstant.USER_ACCOUNT, user.getAccount());
         claims.put(JwtClaimsConstant.USER_STATUS, user.getStatus());
+        claims.put(JwtClaimsConstant.ROLE, role);
         loginVO.setAccess_token(jwtUtil.generateAccessToken(claims));
         loginVO.setRefresh_token(jwtUtil.generateRefreshToken(claims));
         redisUtil.saveRefreshToken(loginVO.getRefresh_token(), user.getId(), jwtProperties.getUserTtl());

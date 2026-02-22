@@ -19,3 +19,38 @@ src/test/
 application-dev.yml
 **/application-dev.yml
 src/main/resources/application-dev.yml
+
+# 5. 忽略 .env（敏感配置，勿提交）
+.env
+
+# 6. 操作系统与编辑器
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+!.vscode/settings.json.example
+!.vscode/tasks.json.example
+!.vscode/launch.json.example
+
+# 7. 日志与临时
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+
+# 8. 本地/敏感配置（除 application-dev.yml 外）
+**/application-local.yml
+**/application-*-local.yml
+*.pem
+*.key
+!.gitignore
+
+# 9. Maven
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+pom.xml.tag
+pom.xml.releaseBackup
+release.properties

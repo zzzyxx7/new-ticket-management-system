@@ -2,6 +2,7 @@ package com.fuzhou.server.service.impl;
 
 import com.fuzhou.common.exception.BaseException;
 import com.fuzhou.common.result.PageResult;
+import com.fuzhou.common.utils.RedisUtil;
 import com.fuzhou.pojo.dto.ShowPageQueryDTO;
 import com.fuzhou.pojo.entity.Show;
 import com.fuzhou.pojo.vo.AdminShowVO;
@@ -20,8 +21,13 @@ import java.util.List;
 @Service
 @Slf4j
 public class AdminShowServiceImpl implements AdminShowService {
+
+    private static final String HOME_SHOWS_CACHE_PATTERN = "home:shows:*";
+
     @Autowired
     private AdminShowMapper adminShowMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public PageResult showPageQuery(ShowPageQueryDTO dto) {
@@ -83,6 +89,7 @@ public class AdminShowServiceImpl implements AdminShowService {
 
         // 新增演出
         adminShowMapper.insert(show);
+        redisUtil.deleteByPattern(HOME_SHOWS_CACHE_PATTERN);
         log.info("管理员新增演出，演出ID：{}，演出名称：{}", show.getId(), show.getTitle());
     }
 
@@ -119,6 +126,7 @@ public class AdminShowServiceImpl implements AdminShowService {
 
         // 更新演出
         adminShowMapper.update(show);
+        redisUtil.deleteByPattern(HOME_SHOWS_CACHE_PATTERN);
         log.info("管理员修改演出，演出ID：{}", show.getId());
     }
 
@@ -141,6 +149,7 @@ public class AdminShowServiceImpl implements AdminShowService {
 
         // 删除演出
         adminShowMapper.deleteById(id);
+        redisUtil.deleteByPattern(HOME_SHOWS_CACHE_PATTERN);
         log.info("管理员删除演出，演出ID：{}，演出名称：{}", id, existingShow.getTitle());
     }
 

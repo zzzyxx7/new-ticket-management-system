@@ -1,15 +1,80 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fuzhou.server.mapper.AddressMapper">
-    <delete id="deleteAddress">
-        DELETE FROM user_address
-        WHERE id = #{id}
-        AND user_id = #{userId}
-    </delete>
+
+    <resultMap id="UserAddressResultMap" type="com.fuzhou.pojo.entity.UserAddress">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="district" column="district"/>
+        <result property="detailedAddress" column="detailed_address"/>
+        <result property="fullAddress" column="full_address"/>
+        <result property="isDefault" column="is_default"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
 
     <select id="getAddress" resultType="com.fuzhou.pojo.vo.AddressVO">
-        SELECT id, full_address, is_default
+        SELECT id, province, city, district, detailed_address as detailedAddress,
+               full_address as fullAddress, is_default as isDefault
         FROM user_address
         WHERE user_id = #{userId}
+        ORDER BY is_default DESC, create_time DESC
     </select>
+
+    <select id="selectById" resultMap="UserAddressResultMap">
+        SELECT id, user_id, province, city, district, detailed_address, full_address, is_default, create_time
+        FROM user_address
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserId" resultType="com.fuzhou.pojo.vo.AddressVO">
+        SELECT id, province, city, district, detailed_address as detailedAddress,
+               full_address as fullAddress, is_default as isDefault
+        FROM user_address
+        WHERE user_id = #{userId}
+        ORDER BY is_default DESC, create_time DESC
+    </select>
+
+    <select id="selectDefaultAddress" resultMap="UserAddressResultMap">
+        SELECT id, user_id, province, city, district, detailed_address, full_address, is_default, create_time
+        FROM user_address
+        WHERE user_id = #{userId} AND is_default = 1
+        LIMIT 1
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_address (user_id, province, city, district, detailed_address, is_default)
+        VALUES (#{userId}, #{province}, #{city}, #{district}, #{detailedAddress}, #{isDefault})
+    </insert>
+
+    <update id="update">
+        UPDATE user_address
+        <set>
+            <if test="province != null and province != ''">province = #{province},</if>
+            <if test="city != null and city != ''">city = #{city},</if>
+            <if test="district != null and district != ''">district = #{district},</if>
+            <if test="detailedAddress != null and detailedAddress != ''">detailed_address = #{detailedAddress},</if>
+            <if test="isDefault != null">is_default = #{isDefault},</if>
+        </set>
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM user_address WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteAddress">
+        DELETE FROM user_address
+        WHERE id = #{id} AND user_id = #{userId}
+    </delete>
+
+    <update id="setAllNonDefault">
+        UPDATE user_address SET is_default = 0 WHERE user_id = #{userId}
+    </update>
+
+    <update id="setDefaultAddress">
+        UPDATE user_address SET is_default = 1
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
 </mapper>

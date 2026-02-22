@@ -1,56 +1,23 @@
 package com.fuzhou.server.config;
 
 
-import com.fuzhou.server.interceptor.JwtTokenStatusInterceptor;
-import com.fuzhou.server.interceptor.JwtTokenUserInterceptor;
-
 import com.fuzhou.common.json.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
 /**
  * 配置类，注册web层相关组件
+ * JWT 认证已由 Spring Security + JwtAuthenticationFilter 接管，原 JwtTokenUserInterceptor 与 JwtTokenStatusInterceptor 已移除
  */
 @Configuration
 @Slf4j
 public class WebMvcConfiguration implements WebMvcConfigurer {
-
-    @Autowired
-    private JwtTokenUserInterceptor jwtTokenUserInterceptor;
-    @Autowired
-    private JwtTokenStatusInterceptor jwtTokenStatusInterceptor;
-
-
-
-//后期这里会加载拦截器和静态配置器
-    /**
-     * 注册自定义拦截器
-     *
-     * @param registry
-     */
-    public void addInterceptors(InterceptorRegistry registry) {
-        log.info("开始注册自定义拦截器...");
-
-        registry.addInterceptor(jwtTokenUserInterceptor)
-                .addPathPatterns("/user/**")
-                .excludePathPatterns("/user/login/**",
-                                     "/refresh/token",
-                                        "/user/show");
-
-        registry.addInterceptor(jwtTokenStatusInterceptor)
-                .addPathPatterns(
-                        "/user/show"
-                );
-    }
 
 
     @Override

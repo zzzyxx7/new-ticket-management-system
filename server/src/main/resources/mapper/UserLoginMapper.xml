@@ -34,7 +34,7 @@
         select password, id ,account, status , name from user where account = #{account}
     </select>
     <select id="getUserId" resultType="java.lang.Long">
-
+        SELECT id FROM user WHERE email = #{email}
     </select>
     <select id="selectUserById" resultType="com.fuzhou.pojo.entity.User">
         SELECT id, name, account, email, status, create_time, image

@@ -1,15 +1,17 @@
 package com.fuzhou.server.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fuzhou.common.constant.ShowCategoryConstant;
 import com.fuzhou.common.exception.BaseException;
 import com.fuzhou.common.result.PageResult;
 import com.fuzhou.common.result.Result;
+import com.fuzhou.common.utils.IpUtil;
+import com.fuzhou.common.utils.RedisUtil;
 import com.fuzhou.pojo.dto.PageDTO;
 import com.fuzhou.pojo.entity.Sessions;
 import com.fuzhou.pojo.vo.ShowDetailVO;
 import com.fuzhou.pojo.vo.ShowVO;
 import com.fuzhou.pojo.vo.SessionsVO;
-import com.fuzhou.common.utils.IpUtil;
 import com.fuzhou.server.mapper.ShowActorMapper;
 import com.fuzhou.server.mapper.ShowMapper;
 import com.fuzhou.server.mapper.SessionsMapper;
@@ -28,11 +30,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class ShowServiceImpl implements ShowService {
+
+    private static final long HOME_SHOWS_CACHE_MINUTES = 5;
+
     @Autowired
     private ShowMapper showMapper;
     @Autowired
@@ -43,6 +49,8 @@ public class ShowServiceImpl implements ShowService {
     private SessionsMapper sessionsMapper;
     @Autowired
     private IpLocationService ipLocationService;
+    @Autowired
+    private RedisUtil redisUtil;
 
 //    @Override
 //    public PageResult show(PageDTO homePageDTO, HttpServletRequest request) {
@@ -101,24 +109,32 @@ public class ShowServiceImpl implements ShowService {
     public Result<List<ShowVO>> getHomeShows(String city, HttpServletRequest request) {
         // 1. 确定查询城市
         String queryCity = determineCity(city, request);
-        
-        // 2. 获取四大类分类名称
+        String cacheKey = redisUtil.buildKey("home", "shows", queryCity);
+
+        // 2. 先查 Redis 缓存（参考 ticket-system）
+        List<ShowVO> cachedList = redisUtil.getJson(cacheKey, new TypeReference<List<ShowVO>>() {});
+        if (cachedList != null) {
+            log.debug("首页推荐命中缓存: city={}", queryCity);
+            return Result.success(cachedList);
+        }
+
+        // 3. 缓存未命中，查数据库
         String[] categories = ShowCategoryConstant.getHomeCategories();
         List<String> categoryList = Arrays.asList(categories);
-        
-        // 3. 查询该城市下的四大类演出
         List<ShowVO> showList = showMapper.selectByCityAndCategories(queryCity, categoryList);
-        
+
         if (CollectionUtils.isEmpty(showList)) {
             return Result.success(new ArrayList<>());
         }
-        
+
         // 4. 批量查询演员信息
         enrichShowsWithActors(showList);
-        
-        // 5. 设置用户端库存信息（只返回是否有库存，不返回具体数量）
+        // 5. 设置用户端库存信息
         setUserSideStockInfo(showList);
-        
+
+        // 6. 写入 Redis 缓存
+        redisUtil.setJson(cacheKey, showList, HOME_SHOWS_CACHE_MINUTES, TimeUnit.MINUTES);
+
         return Result.success(showList);
     }
 

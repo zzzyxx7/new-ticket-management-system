@@ -1,0 +1,121 @@
+# DaMaiPlatform 一键部署：MySQL + Redis + RabbitMQ + 后端应用
+# 使用前请先复制 .env.example 为 .env 并填写配置
+# 若只起中间件、本机跑后端：docker compose up -d mysql redis rabbitmq
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: damai-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-fuzhou}
+      MYSQL_USER: ${MYSQL_USER:-damai}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-damai123}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./server/fuzhou.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - damai-net
+    healthcheck:
+      # 使用与 MYSQL_ROOT_PASSWORD 默认值一致的密码；若修改了 root 密码，请同步改此处 -p 后的值
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    container_name: damai-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - damai-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: damai-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-damai}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-damai123}
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - damai-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: damai-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      # 数据库（使用服务名）
+      FUZHOU_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      FUZHOU_DATASOURCE_HOST: mysql
+      FUZHOU_DATASOURCE_PORT: 3306
+      FUZHOU_DATASOURCE_DATABASE: ${MYSQL_DATABASE:-fuzhou}
+      FUZHOU_DATASOURCE_USERNAME: ${MYSQL_USER:-damai}
+      FUZHOU_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-damai123}
+      # Redis
+      FUZHOU_REDIS_HOST: redis
+      FUZHOU_REDIS_PORT: 6379
+      FUZHOU_REDIS_DATABASE: 0
+      # RabbitMQ
+      FUZHOU_RABBITMQ_HOST: rabbitmq
+      FUZHOU_RABBITMQ_PORT: 5672
+      FUZHOU_RABBITMQ_USERNAME: ${RABBITMQ_USER:-damai}
+      FUZHOU_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-damai123}
+      FUZHOU_RABBITMQ_VIRTUAL_HOST: /
+      FUZHOU_RABBITMQ_ENABLED: "true"
+      # JWT（生产环境务必修改）
+      FUZHOU_JWT_USER_SECRET_KEY: ${FUZHOU_JWT_USER_SECRET_KEY:-NzA2MDI4NjQ2MDI2MzY4NzA4MjM0MTA2NTMxMzgzNjE=}
+      FUZHOU_JWT_REFRESH_SECRET_KEY: ${FUZHOU_JWT_REFRESH_SECRET_KEY:-MjI0NjEyNzU4NjcwNjAxNDc2NDA0MzUyMzIzMTg4NjY=}
+      # 邮件（按需修改）
+      FUZHOU_MAIL_HOST: ${FUZHOU_MAIL_HOST:-smtp.163.com}
+      FUZHOU_MAIL_USERNAME: ${FUZHOU_MAIL_USERNAME:-}
+      FUZHOU_MAIL_PASSWORD: ${FUZHOU_MAIL_PASSWORD:-}
+      FUZHOU_MAIL_DEFAULT_ENCODING: UTF-8
+      # OSS（按需修改）
+      FUZHOU_ALIOSS_ENDPOINT: ${FUZHOU_ALIOSS_ENDPOINT:-}
+      FUZHOU_ALIOSS_ACCESS_KEY_ID: ${FUZHOU_ALIOSS_ACCESS_KEY_ID:-}
+      FUZHOU_ALIOSS_ACCESS_KEY_SECRET: ${FUZHOU_ALIOSS_ACCESS_KEY_SECRET:-}
+      FUZHOU_ALIOSS_BUCKET_NAME: ${FUZHOU_ALIOSS_BUCKET_NAME:-}
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    networks:
+      - damai-net
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  redis_data:
+  rabbitmq_data:
+
+networks:
+  damai-net:
+    driver: bridge
