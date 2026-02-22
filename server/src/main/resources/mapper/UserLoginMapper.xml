@@ -48,7 +48,10 @@
         select exists(select 1 from user where account = #{account})
     </select>
     <select id="AdminLogin" resultType="com.fuzhou.pojo.vo.UserLoginVO">
-        select password, id ,account, status , name from user where account = #{account} and status = 2;
+        <!-- status = 3 表示管理员账号 -->
+        select password, id ,account, status , name
+        from user
+        where account = #{account} and status = 3;
     </select>
 
 

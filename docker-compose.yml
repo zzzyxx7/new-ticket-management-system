@@ -20,8 +20,8 @@ services:
     networks:
       - damai-net
     healthcheck:
-      # 使用与 MYSQL_ROOT_PASSWORD 默认值一致的密码；若修改了 root 密码，请同步改此处 -p 后的值
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      # 密码从 .env 的 MYSQL_ROOT_PASSWORD 读取，改 .env 即可，无需再改 compose
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root123}"]
       interval: 10s
       timeout: 5s
       retries: 5

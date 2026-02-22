@@ -25,8 +25,8 @@ public class UserLoginController {
     @PostMapping
     public Result login(@RequestBody UserLoginDTO userLoginDTO){
         LoginVO  loginVO = userLoginService.login(userLoginDTO);
-        if(loginVO==null || loginVO.getMsg()==null || loginVO.getMsg()=="") return Result.error("登入失败");
-        if(loginVO.getMsg() == "成功注册") return Result.success("注册成功");
+        if (loginVO == null || loginVO.getMsg() == null || "".equals(loginVO.getMsg())) return Result.error("登入失败");
+        if ("成功注册".equals(loginVO.getMsg())) return Result.success("注册成功");
         return Result.success(loginVO);
     }
     /**

@@ -93,15 +93,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Long userId = jwtUtil.getUserIdFromAccessToken(token);
             String role = jwtUtil.getRoleFromAccessToken(token);
 
-            // 兼容旧 token 无 role：从用户表状态推导（status=2 为管理员）
+            // 兼容旧 token 无 role：从用户表状态推导（status=3 为管理员，2 为禁用）
             if (!"ADMIN".equals(role)) {
                 User user = userLoginMapper.selectUserById(userId);
-                if (user != null && user.getStatus() != null && user.getStatus() == 2) {
+                // status=3 -> 管理员
+                if (user != null && user.getStatus() != null && user.getStatus() == 3) {
                     role = "ADMIN";
                 } else if (user == null) {
                     sendForbiddenResponse(response, "用户不存在");
                     return;
-                } else if (user.getStatus() != null && user.getStatus() == 0) {
+                // status=2 -> 已禁用
+                } else if (user.getStatus() != null && user.getStatus() == 2) {
                     sendForbiddenResponse(response, "用户已被禁用");
                     return;
                 }
@@ -111,7 +113,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     sendForbiddenResponse(response, "用户不存在");
                     return;
                 }
-                if (user.getStatus() != null && user.getStatus() == 0) {
+                // status=2 -> 已禁用
+                if (user.getStatus() != null && user.getStatus() == 2) {
                     sendForbiddenResponse(response, "用户已被禁用");
                     return;
                 }

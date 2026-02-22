@@ -10,10 +10,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.fuzhou.server.security.JsonAccessDeniedHandler;
+import com.fuzhou.server.security.JsonAuthenticationEntryPoint;
 
 /**
  * Spring Security 配置（参考 ticket-system）
- * 与 JwtAuthenticationFilter 配合实现 JWT 认证
+ * 与 JwtAuthenticationFilter 配合实现 JWT 认证；
+ * 401/403 通过 exceptionHandling 统一返回 JSON 提示（与 ticket-system 一致，避免空响应体）。
  */
 @Configuration
 @EnableWebSecurity
@@ -28,6 +31,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(new JsonAuthenticationEntryPoint())
+                .accessDeniedHandler(new JsonAccessDeniedHandler())
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
