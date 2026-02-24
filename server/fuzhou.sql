@@ -171,7 +171,7 @@ CREATE TABLE `show` (
 
 LOCK TABLES `show` WRITE;
 /*!40000 ALTER TABLE `show` DISABLE KEYS */;
-INSERT INTO `show` VALUES (1,'2025周杰伦嘉年华演唱会',1,'广东省','深圳市','南山区','深圳湾体育中心','滨海大道3001号','广东省深圳市南山区滨海大道3001号深圳湾体育中心','无图'),(2,'李雪琴脱口秀专场「快乐星球」',3,'北京市','北京市','朝阳区','北京喜剧院','东直门外南大街48号','北京市朝阳区东直门外南大街48号北京喜剧院','无图'),(3,'陈佩斯《戏台》经典话剧',2,'上海市','上海市','黄浦区','上海大剧院','人民大道300号','上海市黄浦区人民大道300号上海大剧院',NULL),(4,'2025草莓音乐节',4,'浙江省','杭州市','西湖区','杭州奥体中心','飞虹路1537号','浙江省杭州市西湖区飞虹路1537号杭州奥体中心',NULL),(5,'测试1',1,'北京市','北京市','无','家里','ff','ff',NULL);
+INSERT INTO `show` VALUES (1,'2025周杰伦嘉年华演唱会',1,'广东省','深圳市','南山区','深圳湾体育中心','滨海大道3001号','广东省深圳市南山区滨海大道3001号深圳湾体育中心','https://damai2802.oss-cn-hangzhou.aliyuncs.com/images/2026/02/24/5a5cc3e53648458ba8a8fb48156add0d.jpg'),(2,'李雪琴脱口秀专场「快乐星球」',3,'北京市','北京市','朝阳区','北京喜剧院','东直门外南大街48号','北京市朝阳区东直门外南大街48号北京喜剧院','https://damai2802.oss-cn-hangzhou.aliyuncs.com/images/2026/02/24/67ce31aad00844c1a98d25dcb984b9fb.jpg'),(3,'陈佩斯《戏台》经典话剧',2,'上海市','上海市','黄浦区','上海大剧院','人民大道300号','上海市黄浦区人民大道300号上海大剧院','https://damai2802.oss-cn-hangzhou.aliyuncs.com/images/2026/02/24/3a322fdfb9614b5fb18198334d790756.jpg'),(4,'2025草莓音乐节',4,'浙江省','杭州市','西湖区','杭州奥体中心','飞虹路1537号','浙江省杭州市西湖区飞虹路1537号杭州奥体中心','https://damai2802.oss-cn-hangzhou.aliyuncs.com/images/2026/02/24/a4a01abf4d1d4bd990df4c2b0aeab81a.jpg'),(5,'测试1',1,'北京市','北京市','无','家里','ff','ff',NULL);
 /*!40000 ALTER TABLE `show` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -259,7 +259,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (148350630816120832,'小明大帝1号',1,'xiaoming123','$2a$10$EYGDtlNmgb10nzNhPRT6BeuN8A1s8vMGxY7njBQq.EBLFOD8fo8nS','xiaoming@163.com',1,'2026-02-14 16:52:27','http://dummyimage.com/400x400',NULL),(148350959716663296,'Kevin',1,'kevinaaaa','$2a$10$jr7UWSGqwu9o/y68/fV4JOolrNquhgZMCqKptkbLV6rBhUi51Fl5a','372340696@qq.com',1,'2026-02-14 16:53:45','http://dummyimage.com/400x400',NULL),(148351089169661952,'测试一号',1,'测试','$2a$10$d2TQ/4y9f61KQgQIar0thuyTW8ttSKpx1/XJLMULb4rF3WN0qECDa','测测试',1,'2026-02-14 16:54:16','测试',NULL),(151175927819141120,NULL,0,'赵一丞','$2a$10$89kIUOHEEqq.DSYTIos./eCYLGzfkXz/GXAnx8acZCzXbbeO3IvCS','2955266541@qq.com',1,'2026-02-22 11:59:10',NULL,NULL),(151178335290916864,'仇水灵',0,'qiushuiling','$2a$10$5X8maO0XVGryXZyH9aFsBuIZoKi78jxtpI9wKQONfqCBJ2Fs6XcHO','llyz_16@qq.com',1,'2026-02-22 12:08:44',NULL,NULL),(151182849817444352,'sj',0,'sj','$2a$10$xsw8sHVR1SdjgDmeObeyLulvUUN59mKiAkxcwfgPvDd/FHX/zNJ8O','q18367715812@qq.com',1,'2026-02-22 12:26:40',NULL,NULL),(151193184943210496,NULL,0,'admin','$2a$10$VTy3MQqAv5ymtjM6IEFVeOC5BsCX9MTXWhTqIOVOFABFEjRqPFHBq','3040202533@qq.com',3,'2026-02-22 13:07:44',NULL,NULL);
+INSERT INTO `user` VALUES (148350630816120832,'小明大帝1号',1,'xiaoming123','$2a$10$EYGDtlNmgb10nzNhPRT6BeuN8A1s8vMGxY7njBQq.EBLFOD8fo8nS','xiaoming@163.com',1,'2026-02-14 16:52:27','http://dummyimage.com/400x400',NULL),(148350959716663296,'Kevin',1,'kevinaaaa','$2a$10$jr7UWSGqwu9o/y68/fV4JOolrNquhgZMCqKptkbLV6rBhUi51Fl5a','372340696@qq.com',1,'2026-02-14 16:53:45','http://dummyimage.com/400x400',NULL),(148351089169661952,'测试一号',1,'测试','$2a$10$d2TQ/4y9f61KQgQIar0thuyTW8ttSKpx1/XJLMULb4rF3WN0qECDa','测测试',1,'2026-02-14 16:54:16','测试',NULL),(151175927819141120,NULL,0,'赵一丞','$2a$10$89kIUOHEEqq.DSYTIos./eCYLGzfkXz/GXAnx8acZCzXbbeO3IvCS','2955266541@qq.com',1,'2026-02-22 11:59:10',NULL,NULL),(151178335290916864,'仇水灵',2,'qiushuiling','$2a$10$5X8maO0XVGryXZyH9aFsBuIZoKi78jxtpI9wKQONfqCBJ2Fs6XcHO','llyz_16@qq.com',1,'2026-02-22 12:08:44','https://damai2802.oss-cn-hangzhou.aliyuncs.com/images/2026/02/24/937993a20c4340f69fc8149283bfdbcc.jpg',NULL),(151182849817444352,'sj',0,'sj','$2a$10$xsw8sHVR1SdjgDmeObeyLulvUUN59mKiAkxcwfgPvDd/FHX/zNJ8O','q18367715812@qq.com',1,'2026-02-22 12:26:40',NULL,NULL),(151193184943210496,NULL,0,'admin','$2a$10$VTy3MQqAv5ymtjM6IEFVeOC5BsCX9MTXWhTqIOVOFABFEjRqPFHBq','3040202533@qq.com',3,'2026-02-22 13:07:44',NULL,NULL),(152009774483898368,'小明',0,'zkj','$2a$10$d40vXaGOaoyEklAltz9fZOMgShMsi57KDb/h9tUWUGzHIrT2Sizae','3040202533@qq.com',1,'2026-02-24 19:12:34',NULL,NULL),(152011050986766336,'王奇',0,'wq','$2a$10$DarKf7Ecu0aaqrBizHgETutJCX8uw26WJ9yrVSPnDADsK605mf35C','3040202533@qq.com',1,'2026-02-24 19:17:39','https://damai2802.oss-cn-hangzhou.aliyuncs.com/images/2026/02/24/937993a20c4340f69fc8149283bfdbcc.jpg',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -295,14 +295,6 @@ LOCK TABLES `user_address` WRITE;
 INSERT INTO `user_address` (`id`, `user_id`, `province`, `city`, `district`, `detailed_address`, `is_default`, `create_time`) VALUES (7,148350959716663296,'北京市','北京市','朝阳区','建国路88号SOHO现代城1010室',1,'2026-01-26 19:37:10'),(8,148351089169661952,'江苏省','苏州市','姑苏区','干将东路566号宏盛大厦8层808',1,'2026-01-26 19:37:10'),(9,148350630816120832,'广东省','广州市','天河区','天河路385号太古汇写字楼30层',1,'2026-01-26 19:37:10'),(10,148350630816120832,'四川省','成都市','锦江区','春熙路街道上东大街6号蓝光时代华章2单元1505',0,'2026-01-26 19:37:10'),(12,151182849817444352,'福建省','福州市','鼓楼区','某某路 100 号',1,'2026-02-22 12:28:55');
 /*!40000 ALTER TABLE `user_address` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'fuzhou'
---
-
---
--- Dumping routines for database 'fuzhou'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -313,4 +305,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-22 13:38:04
+-- Dump completed on 2026-02-24 21:43:57
