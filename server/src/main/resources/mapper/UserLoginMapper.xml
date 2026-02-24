@@ -4,8 +4,8 @@
 
 
     <insert id="register">
-        insert into user (id,name, account, password, email, create_time)
-        values (#{id},#{name}, #{account}, #{password}, #{email}, #{createTime})
+        insert into user (id, name, account, password, email, image, create_time)
+        values (#{id}, #{name}, #{account}, #{password}, #{email}, #{image}, #{createTime})
     </insert>
     <insert id="addCode">
            --         如果传进来的变量值是null，则不插入
@@ -37,7 +37,15 @@
         SELECT id FROM user WHERE email = #{email}
     </select>
     <select id="selectUserById" resultType="com.fuzhou.pojo.entity.User">
-        SELECT id, name, account, email, status, create_time, image
+        SELECT id,
+               name,
+               gender,
+               account,
+               email,
+               status,
+               create_time,
+               image,
+               city
         FROM user
         WHERE id = #{userId}
     </select>

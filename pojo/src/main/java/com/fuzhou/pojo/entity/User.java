@@ -19,6 +19,11 @@ public class User {
     private String name;
 
     /**
+     * 性别：0=未知，1=男，2=女
+     */
+    private Integer gender;
+
+    /**
      * 账号
      */
     private String account;
@@ -45,5 +50,5 @@ public class User {
 
     private String image;
 
-    private String city; //我看数据库里user表有这个，但实体类里面没有这个city
+    private String city; // 我看数据库里user表有这个，但实体类里面没有这个city
 }

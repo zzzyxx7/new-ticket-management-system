@@ -9,6 +9,9 @@
                 <!-- 2. #{ } 加 userInfoVO. 前缀 -->
                 name = #{userInfoVO.name},
             </if>
+            <if test="userInfoVO.gender != null">
+                gender = #{userInfoVO.gender},
+            </if>
             <if test="userInfoVO.account != null and userInfoVO.account != ''">
                 account = #{userInfoVO.account},
             </if>
@@ -23,7 +26,7 @@
     </update>
 
     <select id="getUserInfo" resultType="com.fuzhou.pojo.entity.User">
-        SELECT id, name, account, email, image, create_time, status, city
+        SELECT id, name, gender, account, email, image, create_time, status, city
         FROM user
         WHERE id = #{id}
     </select>

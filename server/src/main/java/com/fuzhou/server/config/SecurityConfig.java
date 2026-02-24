@@ -42,6 +42,8 @@ public class SecurityConfig {
                 .requestMatchers("/user/login/logout", "/admin/login/exit").authenticated()
                 // 完全放行：登录、获取验证码、校验验证码、刷新 token、文档（无需登录）
                 .requestMatchers("/user/login", "/user/login/**", "/refresh/token").permitAll()
+                // 注册时上传头像：允许未登录用户上传图片获取 URL
+                .requestMatchers(HttpMethod.POST, "/user/upload").permitAll()
                 .requestMatchers("/admin/login/**").permitAll()
                 .requestMatchers("/doc/**", "/swagger**", "/v2/api-docs", "/webjars/**").permitAll()
                 // 仅首页场次列表可匿名，其余 /user/show/search、/detail、/condition、/buy 等均需认证
