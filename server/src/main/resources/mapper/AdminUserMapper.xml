@@ -5,14 +5,15 @@
     <!-- 分页查询用户列表 -->
     <select id="pageQuery" resultType="com.fuzhou.pojo.vo.AdminUserVO">
         SELECT
-        id,
-        name,
-        account,
-        email,
-        status,
-        image,
-        create_time AS createTime,
-        city
+            id,
+            name,
+            gender,
+            account,
+            email,
+            status,
+            image,
+            create_time AS createTime,
+            city
         FROM user
         <where>
             <if test="name != null and name != ''">
@@ -36,6 +37,7 @@
         SELECT
             id,
             name,
+            gender,
             account,
             email,
             status,
@@ -53,11 +55,14 @@
             <if test="name != null and name != ''">
                 name = #{name},
             </if>
-            <if test="account != null and account != ''">
+            <if test="account != null &amp;&amp; account != ''">
                 account = #{account},
             </if>
-            <if test="email != null and email != ''">
+            <if test="email != null &amp;&amp; email != ''">
                 email = #{email},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
             </if>
             <if test="image != null">
                 image = #{image},
