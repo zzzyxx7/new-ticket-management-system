@@ -3,6 +3,7 @@ package com.fuzhou.server.service.impl;
 import com.fuzhou.common.constant.JwtClaimsConstant;
 import com.fuzhou.common.exception.AccountOrPasswordException;
 import com.fuzhou.common.exception.AccountUnExistException;
+import com.fuzhou.common.exception.BaseException;
 import com.fuzhou.common.properties.JwtProperties;
 import com.fuzhou.common.utils.*;
 import com.fuzhou.pojo.dto.UserLoginDTO;
@@ -58,16 +59,21 @@ public class UserLoginServiceImpl implements UserLoginService {
             loginVO.setMsg("注册成功");
             return loginVO;
         }
-        if(userLoginDTO.getType()==2){
+        if (userLoginDTO.getType() == 2) {
             UserLoginVO userLoginVO = userLoginMapper.passwordLogin(userLoginDTO);
-            if(userLoginVO == null) throw new AccountOrPasswordException("账号或密码错误");
-            if(passwordUtil.verifyPassword(userLoginDTO.getPassword(), userLoginVO.getPassword())){
+            if (userLoginVO == null) {
+                throw new AccountOrPasswordException("账号或密码错误");
+            }
+            // 账号状态检查：status=2 表示被禁用
+            if (userLoginVO.getStatus() != null && userLoginVO.getStatus() == 2) {
+                throw new BaseException("用户已被禁用，请联系管理员");
+            }
+            if (passwordUtil.verifyPassword(userLoginDTO.getPassword(), userLoginVO.getPassword())) {
                 userId = userLoginVO.getId();
                 cacheUserInfo(userId);
                 loginVO = setToken(userLoginVO, loginVO, "USER");
                 return loginVO;
-            }
-            else{
+            } else {
                 throw new AccountOrPasswordException("账号或密码错误");
             }
         }
@@ -82,16 +88,21 @@ public class UserLoginServiceImpl implements UserLoginService {
             return loginVO;
         }
 
-        if(userLoginDTO.getType()==10){
+        if (userLoginDTO.getType() == 10) {
             UserLoginVO userLoginVO = userLoginMapper.AdminLogin(userLoginDTO);
-            if(userLoginVO == null) throw new AccountOrPasswordException("账号或密码错误");
-            if(passwordUtil.verifyPassword(userLoginDTO.getPassword(), userLoginVO.getPassword())){
+            if (userLoginVO == null) {
+                throw new AccountOrPasswordException("账号或密码错误");
+            }
+            // 管理员账号状态检查：status=2 表示被禁用
+            if (userLoginVO.getStatus() != null && userLoginVO.getStatus() == 2) {
+                throw new BaseException("管理员账号已被禁用，请联系超级管理员");
+            }
+            if (passwordUtil.verifyPassword(userLoginDTO.getPassword(), userLoginVO.getPassword())) {
                 userId = userLoginVO.getId();
                 cacheUserInfo(userId);
                 loginVO = setToken(userLoginVO, loginVO, "ADMIN");
                 return loginVO;
-            }
-            else{
+            } else {
                 throw new AccountOrPasswordException("账号或密码错误");
             }
         }

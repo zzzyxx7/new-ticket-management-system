@@ -167,6 +167,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (requestURI.contains("/user/login") || requestURI.endsWith("/refresh/token") || "/refresh/token".equals(requestURI)) {
             return true;
         }
+        // 注册时上传头像：允许未登录用户上传图片获取 URL
+        if (requestURI.equals("/user/upload")) {
+            return true;
+        }
         if (requestURI.startsWith("/admin/login")) {
             return true;
         }
