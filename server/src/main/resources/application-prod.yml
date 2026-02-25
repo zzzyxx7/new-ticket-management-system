@@ -31,7 +31,7 @@ fuzhou:
     default-encoding: ${FUZHOU_MAIL_DEFAULT_ENCODING:UTF-8}
   jwt:
     user-secret-key: ${FUZHOU_JWT_USER_SECRET_KEY:}
-    user-ttl: 900000
+    user-ttl: 86400000
     user-token-name: token
     refresh-secret-key: ${FUZHOU_JWT_REFRESH_SECRET_KEY:}
     refresh-ttl: 86400000
