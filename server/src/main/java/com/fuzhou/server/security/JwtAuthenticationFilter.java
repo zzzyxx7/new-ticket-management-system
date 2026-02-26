@@ -133,11 +133,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             );
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            filterChain.doFilter(request, response);
         } catch (Exception e) {
+            // 只处理认证相关异常，不吞掉后续业务层抛出的异常（例如 JSON 解析错误）
             sendUnauthorizedResponse(response, "认证失败: " + e.getMessage());
+            BaseContext.removeCurrentId();
+            return;
+        }
+
+        try {
+            // 认证通过后，继续后续过滤器链和业务逻辑
+            filterChain.doFilter(request, response);
         } finally {
+            // 确保请求结束后清理上下文
             BaseContext.removeCurrentId();
         }
     }

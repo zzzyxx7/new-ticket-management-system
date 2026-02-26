@@ -28,5 +28,7 @@ public interface UserLoginMapper {
 
     Boolean repeat(String account);
 
+    Boolean emailRepeat(String email);
+
     UserLoginVO AdminLogin(UserLoginDTO userLoginDTO);
 }

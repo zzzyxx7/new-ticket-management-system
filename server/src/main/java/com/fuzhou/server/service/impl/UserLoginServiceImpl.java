@@ -49,6 +49,14 @@ public class UserLoginServiceImpl implements UserLoginService {
         Long userId = 0L;
         LoginVO loginVO = new LoginVO();
         if(userLoginDTO.getType()==1){
+            // 注册前先校验邮箱是否已被使用（仅校验非空邮箱）
+            String email = userLoginDTO.getEmail();
+            if (email != null && !email.isEmpty()) {
+                Boolean emailUsed = userLoginMapper.emailRepeat(email);
+                if (Boolean.TRUE.equals(emailUsed)) {
+                    throw new BaseException("该邮箱已被其他账号使用");
+                }
+            }
             SnowflakeIdUtil snowflakeIdUtil = SnowflakeIdUtil.getDefaultInstance();
             userLoginDTO.setId(snowflakeIdUtil.generateId());
             userLoginDTO.setCreateTime(LocalDateTime.now());
