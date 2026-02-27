@@ -5,7 +5,7 @@
     <!-- 根据城市查询演出列表 -->
     <select id="selectByCity" resultType="com.fuzhou.pojo.vo.ShowVO">
         SELECT s.id, s.title, s.image,
-               (SELECT MIN(se.price) FROM sessions se WHERE se.show_id = s.id) AS price,
+               (SELECT MIN(se.price) FROM sessions se WHERE se.show_id = s.id AND se.price IS NOT NULL AND se.price > 0) AS price,
                s.city, s.venue_name as venueName,
                s.sort_id as sortId, so.name as sortName
         FROM `show` s
@@ -17,7 +17,7 @@
     <!-- 根据城市和分类列表查询演出（首页推荐） -->
     <select id="selectByCityAndCategories" resultType="com.fuzhou.pojo.vo.ShowVO">
         SELECT s.id, s.title, s.image,
-               (SELECT MIN(se.price) FROM sessions se WHERE se.show_id = s.id) AS price,
+               (SELECT MIN(se.price) FROM sessions se WHERE se.show_id = s.id AND se.price IS NOT NULL AND se.price > 0) AS price,
                s.city, s.venue_name as venueName,
                s.sort_id as sortId, so.name as sortName
         FROM `show` s
@@ -34,7 +34,7 @@
     <!-- 搜索演出（匹配演出名/明星名） -->
     <select id="searchByNameAndCondition" resultType="com.fuzhou.pojo.vo.ShowVO">
         SELECT DISTINCT s.id, s.title, s.image,
-               (SELECT MIN(se.price) FROM sessions se WHERE se.show_id = s.id) AS price,
+               (SELECT MIN(se.price) FROM sessions se WHERE se.show_id = s.id AND se.price IS NOT NULL AND se.price > 0) AS price,
                s.city, s.venue_name as venueName,
                s.sort_id as sortId, so.name as sortName
         FROM `show` s
@@ -62,7 +62,7 @@
     <!-- 条件查询演出（城市、分类） -->
     <select id="selectByCondition" resultType="com.fuzhou.pojo.vo.ShowVO">
         SELECT s.id, s.title, s.image,
-               (SELECT MIN(se.price) FROM sessions se WHERE se.show_id = s.id) AS price,
+               (SELECT MIN(se.price) FROM sessions se WHERE se.show_id = s.id AND se.price IS NOT NULL AND se.price > 0) AS price,
                s.city, s.venue_name as venueName,
                s.sort_id as sortId, so.name as sortName
         FROM `show` s
