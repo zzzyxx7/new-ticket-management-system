@@ -2,6 +2,8 @@ package com.fuzhou.pojo.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 管理端演出详情VO
  * 包含演出的所有字段以及关联的分类名称
@@ -62,6 +64,11 @@ public class AdminShowVO {
      * 节目封面图
      */
     private String image;
+
+    /**
+     * 最低票价（取该演出所有场次的最低价）
+     */
+    private BigDecimal price;
 
     /**
      * 剩余库存（该演出下所有场次的剩余库存总和）

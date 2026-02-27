@@ -1,6 +1,7 @@
 package com.fuzhou.pojo.vo;
 
 import lombok.Data;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Duration;
 
@@ -18,6 +19,11 @@ public class SessionsVO {
      * 关联演出ID
      */
     private Long showId;
+
+    /**
+     * 场次单价（元）
+     */
+    private BigDecimal price;
 
     /**
      * 场次开始时间

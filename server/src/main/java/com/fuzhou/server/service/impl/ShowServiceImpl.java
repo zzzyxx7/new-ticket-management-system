@@ -2,7 +2,6 @@ package com.fuzhou.server.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fuzhou.common.constant.ShowCategoryConstant;
-import com.fuzhou.common.exception.BaseException;
 import com.fuzhou.common.result.PageResult;
 import com.fuzhou.common.result.Result;
 import com.fuzhou.common.utils.IpUtil;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -154,7 +152,6 @@ public class ShowServiceImpl implements ShowService {
         );
         
         if (CollectionUtils.isEmpty(showList)) {
-            Page<ShowVO> page = (Page<ShowVO>) showList;
             return Result.success(new PageResult<>(0L, new ArrayList<>()));
         }
         
@@ -179,7 +176,6 @@ public class ShowServiceImpl implements ShowService {
         List<ShowVO> showList = showMapper.selectByCondition(city, sortId);
         
         if (CollectionUtils.isEmpty(showList)) {
-            Page<ShowVO> page = (Page<ShowVO>) showList;
             return Result.success(new PageResult<>(0L, new ArrayList<>()));
         }
         
@@ -208,12 +204,14 @@ public class ShowServiceImpl implements ShowService {
         
         // 2. 查询场次信息
         List<Sessions> sessionsList = sessionsMapper.selectByShowId(id);
+        boolean hasSessions = !CollectionUtils.isEmpty(sessionsList);
         List<SessionsVO> sessionsVOList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(sessionsList)) {
+        if (hasSessions) {
             for (Sessions session : sessionsList) {
                 SessionsVO sessionsVO = new SessionsVO();
                 sessionsVO.setId(session.getId());
                 sessionsVO.setShowId(session.getShowId());
+                sessionsVO.setPrice(session.getPrice());
                 sessionsVO.setStartTime(session.getStartTime());
                 sessionsVO.setDuration(session.getDuration());
                 // 用户端只返回是否有库存
@@ -228,14 +226,12 @@ public class ShowServiceImpl implements ShowService {
         detailVO.setActors(actors);
         
         // 4. 设置库存信息（用户端只返回是否有库存）
-        boolean hasStock = sessionsList != null && sessionsList.stream()
-            .anyMatch(s -> s.getStock() != null && s.getStock() > 0);
+        boolean hasStock = hasSessions && sessionsList.stream().anyMatch(s -> s.getStock() != null && s.getStock() > 0);
         detailVO.setHasStock(hasStock);
         
         // 5. 设置是否已开票（这里可以根据实际业务逻辑判断，暂时简单处理）
         // 如果有场次且场次开始时间未到，认为已开票
-        boolean issued = !CollectionUtils.isEmpty(sessionsList) && 
-            sessionsList.stream().anyMatch(s -> s.getStartTime() != null);
+        boolean issued = hasSessions && sessionsList.stream().anyMatch(s -> s.getStartTime() != null);
         detailVO.setIssued(issued);
         
         return Result.success(detailVO);

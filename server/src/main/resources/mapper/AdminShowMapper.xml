@@ -19,7 +19,8 @@
             s.venue_name as venueName,
             s.detail_address as detailAddress,
             s.full_address as fullAddress,
-            s.image
+            s.image,
+            (SELECT MIN(se.price) FROM sessions se WHERE se.show_id = s.id) AS price
         FROM `show` s
         LEFT JOIN `sort` so ON s.sort_id = so.id
 
@@ -71,6 +72,7 @@
             s.detail_address as detailAddress,
             s.full_address as fullAddress,
             s.image,
+            MIN(sess.price) as price,
             -- 剩余库存：统计该演出下所有场次的剩余库存总和
             COALESCE(SUM(sess.stock), 0) as stock,
             -- 总库存：统计该演出下所有场次的初始库存总和

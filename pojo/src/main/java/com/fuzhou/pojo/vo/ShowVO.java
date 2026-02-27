@@ -1,8 +1,8 @@
 package com.fuzhou.pojo.vo;
 
-import com.fuzhou.pojo.entity.Actor;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -25,6 +25,11 @@ public class ShowVO {
      * 节目封面图（show表新增的image字段）
      */
     private String image;
+
+    /**
+     * 最低票价（取该演出所有场次的最低价）
+     */
+    private BigDecimal price;
 
     /**
      * 演出城市（简化展示，无需区县/省份冗余）
