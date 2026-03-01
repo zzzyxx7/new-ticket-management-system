@@ -53,9 +53,9 @@
                 AND o.order_status = #{orderStatus}
             </if>
 
-            <!-- 订单号模糊查询：如果orderNo不为空，才拼接这个条件 -->
+            <!-- 订单号精确查询 -->
             <if test="orderNo != null and orderNo != ''">
-                AND o.order_no LIKE CONCAT('%', #{orderNo}, '%')
+                AND o.order_no = #{orderNo}
             </if>
 
             <!-- 用户ID筛选：管理端可选，不传就查所有用户的订单 -->

@@ -97,7 +97,7 @@
                 AND o.order_status = #{orderStatus}
             </if>
             <if test="orderNo != null and orderNo != ''">
-                AND o.order_no LIKE CONCAT('%', #{orderNo}, '%')
+                AND o.order_no = #{orderNo}
             </if>
             <if test="beginTime != null and beginTime != ''">
                 AND o.create_time &gt;= #{beginTime}
