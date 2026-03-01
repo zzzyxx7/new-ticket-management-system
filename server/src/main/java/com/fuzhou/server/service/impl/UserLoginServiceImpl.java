@@ -49,7 +49,6 @@ public class UserLoginServiceImpl implements UserLoginService {
         Long userId = 0L;
         LoginVO loginVO = new LoginVO();
         if(userLoginDTO.getType()==1){
-            // 注册前先校验邮箱是否已被使用（仅校验非空邮箱）
             String email = userLoginDTO.getEmail();
             if (email != null && !email.isEmpty()) {
                 Boolean emailUsed = userLoginMapper.emailRepeat(email);
@@ -72,7 +71,6 @@ public class UserLoginServiceImpl implements UserLoginService {
             if (userLoginVO == null) {
                 throw new AccountOrPasswordException("账号或密码错误");
             }
-            // 账号状态检查：status=2 表示被禁用
             if (userLoginVO.getStatus() != null && userLoginVO.getStatus() == 2) {
                 throw new BaseException("用户已被禁用，请联系管理员");
             }

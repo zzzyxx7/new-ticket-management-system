@@ -2,11 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fuzhou.server.mapper.AdminShowMapper">
 
-    <!--
-        1. 管理端分页查询演出列表
-        使用动态SQL：根据前端传入的条件，动态拼接WHERE子句
-        支持筛选条件：演出名称（模糊）、城市（精确）、分类ID（精确）、场馆名称（模糊）
-    -->
     <select id="pageQuery" resultType="com.fuzhou.pojo.vo.AdminShowVO">
         SELECT
             s.id,
@@ -23,31 +18,16 @@
             (SELECT MIN(se.price) FROM sessions se WHERE se.show_id = s.id AND se.price IS NOT NULL AND se.price > 0) AS price
         FROM `show` s
         LEFT JOIN `sort` so ON s.sort_id = so.id
-
-        <!--
-            动态WHERE子句：
-            <where> 标签会自动处理：
-            1. 如果所有<if>都不满足，不会生成WHERE
-            2. 如果第一个<if>满足，会自动去掉开头的AND
-            3. 如果中间某个<if>不满足，会自动处理AND的位置
-        -->
         <where>
-            <!-- 演出名称模糊查询：如果title不为空，才拼接这个条件 -->
             <if test="title != null and title != ''">
                 AND s.title LIKE CONCAT('%', #{title}, '%')
             </if>
-
-            <!-- 城市精确查询：如果city不为空，才拼接这个条件 -->
             <if test="city != null and city != ''">
                 AND s.city = #{city}
             </if>
-
-            <!-- 分类ID精确查询：如果sortId不为null，才拼接这个条件 -->
             <if test="sortId != null">
                 AND s.sort_id = #{sortId}
             </if>
-
-            <!-- 场馆名称模糊查询：如果venueName不为空，才拼接这个条件 -->
             <if test="venueName != null and venueName != ''">
                 AND s.venue_name LIKE CONCAT('%', #{venueName}, '%')
             </if>
@@ -55,10 +35,6 @@
         ORDER BY s.id DESC
     </select>
 
-    <!--
-        2. 管理端根据ID查询演出详情
-        包含分类名称和库存数量（该演出下的场次数量）
-    -->
     <select id="getById" resultType="com.fuzhou.pojo.vo.AdminShowVO">
         SELECT
             s.id,
@@ -73,9 +49,7 @@
             s.full_address as fullAddress,
             s.image,
             MIN(CASE WHEN sess.price IS NOT NULL AND sess.price > 0 THEN sess.price END) as price,
-            -- 剩余库存：统计该演出下所有场次的剩余库存总和
             COALESCE(SUM(sess.stock), 0) as stock,
-            -- 总库存：统计该演出下所有场次的初始库存总和
             COALESCE(SUM(sess.total_stock), 0) as totalStock
         FROM `show` s
         LEFT JOIN sessions sess ON s.id = sess.show_id
@@ -84,10 +58,6 @@
         GROUP BY s.id
     </select>
 
-    <!--
-        3. 管理端新增演出
-        注意：id是自增的，不需要传入
-    -->
     <insert id="insert" parameterType="com.fuzhou.pojo.entity.Show" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO `show` (
             title,
@@ -112,60 +82,33 @@
         )
     </insert>
 
-    <!--
-        4. 管理端修改演出信息
-        使用动态SQL：只更新传入的字段，没传的字段不更新
-    -->
     <update id="update" parameterType="com.fuzhou.pojo.entity.Show">
         UPDATE `show`
-        <!--
-            <set> 标签会自动处理：
-            1. 自动在字段之间加逗号
-            2. 自动去掉最后一个逗号
-            3. 如果所有<if>都不满足，不会生成SET子句（会报错，但实际不会发生）
-        -->
         <set>
-            <!-- 如果title不为空，才更新这个字段 -->
             <if test="title != null and title != ''">
                 title = #{title},
             </if>
-
-            <!-- 如果sortId不为null，才更新这个字段 -->
             <if test="sortId != null">
                 sort_id = #{sortId},
             </if>
-
-            <!-- 如果province不为空，才更新这个字段 -->
             <if test="province != null and province != ''">
                 province = #{province},
             </if>
-
-            <!-- 如果city不为空，才更新这个字段 -->
             <if test="city != null and city != ''">
                 city = #{city},
             </if>
-
-            <!-- 如果district不为空，才更新这个字段 -->
             <if test="district != null and district != ''">
                 district = #{district},
             </if>
-
-            <!-- 如果venueName不为空，才更新这个字段 -->
             <if test="venueName != null and venueName != ''">
                 venue_name = #{venueName},
             </if>
-
-            <!-- 如果detailAddress不为空，才更新这个字段 -->
             <if test="detailAddress != null and detailAddress != ''">
                 detail_address = #{detailAddress},
             </if>
-
-            <!-- 如果fullAddress不为空，才更新这个字段 -->
             <if test="fullAddress != null and fullAddress != ''">
                 full_address = #{fullAddress},
             </if>
-
-            <!-- 如果image不为空，才更新这个字段 -->
             <if test="image != null and image != ''">
                 image = #{image},
             </if>
@@ -173,11 +116,6 @@
         WHERE id = #{id}
     </update>
 
-    <!--
-        5. 管理端删除演出（根据ID）
-        注意：如果该演出有关联的场次（sessions），删除可能会失败（外键约束）
-        实际项目中可能需要先删除关联数据，或者使用软删除
-    -->
     <delete id="deleteById" parameterType="java.lang.Long">
         DELETE FROM `show`
         WHERE id = #{id}

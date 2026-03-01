@@ -19,6 +19,7 @@ public class OrderVO {
     private Integer paymentStatus;    // 支付状态
     private String subject;           // 订单标题
     private String body;              // 订单描述
+    private String image;             // 订单封面图（OSS URL）
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private LocalDateTime payTime;

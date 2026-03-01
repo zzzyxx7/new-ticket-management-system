@@ -2,16 +2,13 @@ package com.fuzhou.pojo.vo;
 
 import lombok.Data;
 
-/**
- * 地址展示 VO（含省市区、详细地址、是否默认）
- */
 @Data
 public class AddressVO {
     private Long id;
-    private String province;
-    private String city;
-    private String district;
-    private String detailedAddress;
-    private String fullAddress;
-    private Integer isDefault;
+    private String province;         // 省份
+    private String city;             // 城市
+    private String district;         // 区县
+    private String detailedAddress;  // 详细地址
+    private String fullAddress;      // 完整地址
+    private Integer isDefault;       // 是否默认 0-否 1-是
 }

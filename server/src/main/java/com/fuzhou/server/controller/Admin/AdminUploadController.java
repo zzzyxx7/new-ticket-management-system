@@ -10,11 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * 管理端图片上传：
- * - 上传管理员头像
- * - 上传演出封面图
- */
+/** 管理端图片上传 */
 @RestController
 @RequestMapping("/admin")
 @Slf4j
@@ -23,27 +19,18 @@ public class AdminUploadController {
     @Autowired
     private AliOssUtil aliOssUtil;
 
-    /**
-     * 上传管理员头像
-     *
-     * POST /admin/upload/avatar
-     * Header: token: <admin access_token>
-     * Body: form-data, key=file, value=选择的图片
-     */
     @PostMapping("/upload/avatar")
     public Result<String> uploadAvatar(@RequestParam("file") MultipartFile file) {
         return doUpload(file);
     }
 
-    /**
-     * 上传演出封面图
-     *
-     * POST /admin/upload/show-cover
-     * Header: token: <admin access_token>
-     * Body: form-data, key=file, value=选择的图片
-     */
     @PostMapping("/upload/show-cover")
     public Result<String> uploadShowCover(@RequestParam("file") MultipartFile file) {
+        return doUpload(file);
+    }
+
+    @PostMapping("/upload/order-cover")
+    public Result<String> uploadOrderCover(@RequestParam("file") MultipartFile file) {
         return doUpload(file);
     }
 

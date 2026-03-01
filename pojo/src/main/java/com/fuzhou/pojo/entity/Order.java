@@ -17,6 +17,7 @@ public class Order {
     private Integer paymentStatus;    // 支付状态：0-未支付 1-已支付
     private String subject;           // 订单标题
     private String body;              // 订单描述
+    private String image;             // 订单封面图（OSS URL）
     private LocalDateTime createTime; // 创建时间
     private LocalDateTime updateTime; // 更新时间
     private LocalDateTime payTime;    // 支付时间

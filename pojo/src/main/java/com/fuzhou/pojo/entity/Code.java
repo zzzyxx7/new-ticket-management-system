@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Code {
     private Integer id;
-    private String code;
-    private String userEmail;
-    private Boolean used;
-    private LocalDateTime expireTime;
+    private String code;             // 验证码
+    private String userEmail;        // 用户邮箱
+    private Boolean used;            // 是否已使用
+    private LocalDateTime expireTime;// 过期时间
 }

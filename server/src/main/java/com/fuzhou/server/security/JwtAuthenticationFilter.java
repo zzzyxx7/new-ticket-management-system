@@ -25,10 +25,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
-/**
- * JWT 认证过滤器（参考 ticket-system）
- * 替代原有的 JwtTokenUserInterceptor 和 JwtTokenStatusInterceptor
- */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -93,16 +89,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Long userId = jwtUtil.getUserIdFromAccessToken(token);
             String role = jwtUtil.getRoleFromAccessToken(token);
 
-            // 兼容旧 token 无 role：从用户表状态推导（status=3 为管理员，2 为禁用）
             if (!"ADMIN".equals(role)) {
                 User user = userLoginMapper.selectUserById(userId);
-                // status=3 -> 管理员
                 if (user != null && user.getStatus() != null && user.getStatus() == 3) {
                     role = "ADMIN";
                 } else if (user == null) {
                     sendForbiddenResponse(response, "用户不存在");
                     return;
-                // status=2 -> 已禁用
                 } else if (user.getStatus() != null && user.getStatus() == 2) {
                     sendForbiddenResponse(response, "用户已被禁用");
                     return;
@@ -113,7 +106,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     sendForbiddenResponse(response, "用户不存在");
                     return;
                 }
-                // status=2 -> 已禁用
                 if (user.getStatus() != null && user.getStatus() == 2) {
                     sendForbiddenResponse(response, "用户已被禁用");
                     return;
@@ -141,17 +133,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            // 认证通过后，继续后续过滤器链和业务逻辑
             filterChain.doFilter(request, response);
         } finally {
-            // 确保请求结束后清理上下文
             BaseContext.removeCurrentId();
         }
     }
 
-    /**
-     * 提取 token：支持 "token" 请求头 或 "Authorization: Bearer xxx"
-     */
     private String extractToken(HttpServletRequest request) {
         String tokenHeader = jwtProperties.getUserTokenName();
         String value = request.getHeader(tokenHeader);
@@ -166,15 +153,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean shouldSkipAuthentication(String requestURI) {
-        // 登出接口需走认证（设置 BaseContext），不跳过
         if (requestURI.equals("/user/login/logout") || requestURI.equals("/admin/login/exit")) {
             return false;
         }
-        // 登录、获取验证码(/phrase)、校验(/verify) 等不需 token（兼容带 context-path 或 /api 前缀）
         if (requestURI.contains("/user/login") || requestURI.endsWith("/refresh/token") || "/refresh/token".equals(requestURI)) {
             return true;
         }
-        // 注册时上传头像：允许未登录用户上传图片获取 URL
         if (requestURI.equals("/user/upload")) {
             return true;
         }
@@ -188,7 +172,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return false;
     }
 
-    /** 仅 GET /user/show（首页）为可选登录；其余如 /user/show/search、/detail、/buy 等均需认证 */
     private boolean isOptionalAuthPath(String requestURI, String method) {
         return "GET".equalsIgnoreCase(method) && "/user/show".equals(requestURI);
     }

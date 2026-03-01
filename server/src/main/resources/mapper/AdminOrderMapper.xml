@@ -18,6 +18,7 @@
         o.order_status as orderStatus,
         o.subject,
         o.body,
+        o.image,
         o.create_time as createTime,
         o.update_time as updateTime,
         o.pay_time as payTime,
@@ -92,6 +93,7 @@
             o.order_status as orderStatus,
             o.subject,
             o.body,
+            o.image,
             o.create_time as createTime,
             o.update_time as updateTime,
             o.pay_time as payTime,
@@ -147,6 +149,11 @@
             <!-- 如果body不为空，才更新这个字段 -->
             <if test="body != null and body != ''">
                 body = #{body},
+            </if>
+
+            <!-- 如果image不为空，才更新这个字段 -->
+            <if test="image != null and image != ''">
+                image = #{image},
             </if>
 
             <!-- 如果payTime不为null，才更新这个字段 -->

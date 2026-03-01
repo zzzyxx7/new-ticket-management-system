@@ -15,6 +15,7 @@
             payment_status,
             subject,
             body,
+            image,
             create_time,
             update_time,
             pay_time
@@ -30,6 +31,7 @@
             #{paymentStatus},
             #{subject},
             #{body},
+            #{image},
             #{createTime},
             #{updateTime},
             #{payTime}
@@ -50,6 +52,7 @@
             payment_status as paymentStatus,
             subject,
             body,
+            image,
             create_time as createTime,
             update_time as updateTime,
             pay_time as payTime
@@ -72,6 +75,7 @@
         o.payment_status as paymentStatus,
         o.subject,
         o.body,
+        o.image,
         o.create_time as createTime,
         o.update_time as updateTime,
         o.pay_time as payTime,
@@ -120,6 +124,7 @@
         o.payment_status as paymentStatus,
         o.subject,
         o.body,
+        o.image,
         o.create_time as createTime,
         o.update_time as updateTime,
         o.pay_time as payTime,
