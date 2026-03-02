@@ -3,6 +3,7 @@ package com.fuzhou.server.controller.User;
 import com.fuzhou.common.context.BaseContext;
 import com.fuzhou.common.result.PageResult;
 import com.fuzhou.common.result.Result;
+import org.springframework.beans.factory.annotation.Value;
 import com.fuzhou.pojo.dto.CreateOrderDTO;
 import com.fuzhou.pojo.dto.PageDTO;
 import com.fuzhou.pojo.vo.ShowDetailVO;
@@ -31,6 +32,8 @@ public class ShowController {
     @Autowired
     private SessionsService sessionsService;
 
+    @Value("${fuzhou.order.max-quantity-per-order:6}")
+    private Integer maxQuantityPerOrder;
 
 //    @GetMapping
 //    public Result show(PageDTO homePageDTO, HttpServletRequest request){
@@ -95,6 +98,9 @@ public class ShowController {
 
         if (dto.getSessionId() == null || dto.getQuantity() == null || dto.getQuantity() <= 0) {
             return Result.error("参数错误：场次ID和数量不能为空且必须大于0");
+        }
+        if (dto.getQuantity() > maxQuantityPerOrder) {
+            return Result.error("单笔订单最多购买" + maxQuantityPerOrder + "张票");
         }
         if (userId == null) {
             return Result.error("用户未登录");

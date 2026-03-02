@@ -4,8 +4,13 @@
 
     <!-- 根据演出ID查询场次列表 -->
     <select id="selectByShowId" resultType="com.fuzhou.pojo.entity.Sessions">
-        SELECT id, show_id as showId, price, start_time as startTime, duration,
-               stock, total_stock as totalStock
+        SELECT id,
+               show_id      as showId,
+               price,
+               start_time   as startTime,
+               duration,
+               stock,
+               total_stock  as totalStock
         FROM sessions
         WHERE show_id = #{showId}
         ORDER BY start_time ASC
@@ -13,11 +18,51 @@
 
     <!-- 根据ID查询场次 -->
     <select id="selectById" resultType="com.fuzhou.pojo.entity.Sessions">
-        SELECT id, show_id as showId, price, start_time as startTime, duration,
-               stock, total_stock as totalStock
+        SELECT id,
+               show_id      as showId,
+               price,
+               start_time   as startTime,
+               duration,
+               stock,
+               total_stock  as totalStock
         FROM sessions
         WHERE id = #{id}
     </select>
+
+    <!-- 新增场次 -->
+    <insert id="insert" parameterType="com.fuzhou.pojo.entity.Sessions" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sessions (show_id, price, start_time, duration, stock, total_stock)
+        VALUES (#{showId}, #{price}, #{startTime}, #{duration}, #{stock}, #{totalStock})
+    </insert>
+
+    <!-- 修改场次（动态更新） -->
+    <update id="update" parameterType="com.fuzhou.pojo.entity.Sessions">
+        UPDATE sessions
+        <set>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime},
+            </if>
+            <if test="duration != null">
+                duration = #{duration},
+            </if>
+            <if test="stock != null">
+                stock = #{stock},
+            </if>
+            <if test="totalStock != null">
+                total_stock = #{totalStock},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除场次 -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM sessions
+        WHERE id = #{id}
+    </delete>
 
     <!-- 扣减库存（使用乐观锁，基于业务字段） -->
     <update id="decreaseStock">

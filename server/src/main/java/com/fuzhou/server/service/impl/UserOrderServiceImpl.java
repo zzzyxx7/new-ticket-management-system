@@ -16,6 +16,7 @@ import com.fuzhou.common.utils.RedissonLockUtil;
 import lombok.extern.slf4j.Slf4j;
 import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,12 +47,18 @@ public class UserOrderServiceImpl implements UserOrderService {
     @Autowired
     private RedissonLockUtil redissonLockUtil;
 
+    @Value("${fuzhou.order.max-quantity-per-order:6}")
+    private Integer maxQuantityPerOrder;
+
     // 抢票 / 创建订单
     @Override
     @Transactional
     public Result<String> createOrder(Long sessionId, Integer quantity, Long userId) {
         if (sessionId == null || quantity == null || quantity <= 0) {
             return Result.error("参数错误：场次ID和数量不能为空且必须大于0");
+        }
+        if (quantity > maxQuantityPerOrder) {
+            return Result.error("单笔订单最多购买" + maxQuantityPerOrder + "张票");
         }
         Long resolvedUserId = userId;
         if (resolvedUserId == null) {

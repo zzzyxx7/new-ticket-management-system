@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 public class SessionsServiceImpl implements SessionsService {
@@ -17,11 +19,78 @@ public class SessionsServiceImpl implements SessionsService {
     private SessionsMapper sessionsMapper;
 
     @Override
+    public List<Sessions> listByShowId(Long showId) {
+        if (showId == null) {
+            throw new BaseException("演出ID不能为空");
+        }
+        return sessionsMapper.selectByShowId(showId);
+    }
+
+    @Override
     public Sessions getById(Long sessionId) {
         if (sessionId == null) {
             throw new BaseException("场次ID不能为空");
         }
         return sessionsMapper.selectById(sessionId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createSession(Sessions sessions) {
+        if (sessions == null || sessions.getShowId() == null) {
+            throw new BaseException("场次信息或演出ID不能为空");
+        }
+        if (sessions.getTotalStock() == null || sessions.getTotalStock() < 0) {
+            throw new BaseException("总库存不能为空且不能为负数");
+        }
+        if (sessions.getStock() == null) {
+            sessions.setStock(sessions.getTotalStock());
+        }
+        if (sessions.getStock() < 0 || sessions.getStock() > sessions.getTotalStock()) {
+            throw new BaseException("剩余库存必须在 0 到总库存之间");
+        }
+        sessionsMapper.insert(sessions);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateSession(Sessions sessions) {
+        if (sessions == null || sessions.getId() == null) {
+            throw new BaseException("场次信息或场次ID不能为空");
+        }
+
+        Sessions dbSession = sessionsMapper.selectById(sessions.getId());
+        if (dbSession == null) {
+            throw new BaseException("场次不存在");
+        }
+
+        Integer newTotalStock = sessions.getTotalStock() != null ? sessions.getTotalStock() : dbSession.getTotalStock();
+        Integer newStock = sessions.getStock() != null ? sessions.getStock() : dbSession.getStock();
+
+        if (newTotalStock == null || newTotalStock < 0) {
+            throw new BaseException("总库存不能为空且不能为负数");
+        }
+        if (newStock == null || newStock < 0 || newStock > newTotalStock) {
+            throw new BaseException("剩余库存必须在 0 到总库存之间");
+        }
+
+        sessions.setTotalStock(newTotalStock);
+        sessions.setStock(newStock);
+
+        sessionsMapper.update(sessions);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteSession(Long id) {
+        if (id == null) {
+            throw new BaseException("场次ID不能为空");
+        }
+        Sessions dbSession = sessionsMapper.selectById(id);
+        if (dbSession == null) {
+            throw new BaseException("场次不存在");
+        }
+        sessionsMapper.deleteById(id);
     }
 
     @Override

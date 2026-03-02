@@ -2,13 +2,36 @@ package com.fuzhou.server.service;
 
 import com.fuzhou.pojo.entity.Sessions;
 
+import java.util.List;
+
 public interface SessionsService {
+
+    /**
+     * 根据演出ID查询该演出的所有场次
+     */
+    List<Sessions> listByShowId(Long showId);
+
     /**
      * 根据ID查询场次信息（包含库存）
      * @param sessionId 场次ID
      * @return 场次信息
      */
     Sessions getById(Long sessionId);
+
+    /**
+     * 新增场次
+     */
+    void createSession(Sessions sessions);
+
+    /**
+     * 修改场次
+     */
+    void updateSession(Sessions sessions);
+
+    /**
+     * 删除场次
+     */
+    void deleteSession(Long id);
 
     /**
      * 扣减库存

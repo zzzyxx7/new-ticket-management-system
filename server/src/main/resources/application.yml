@@ -80,6 +80,9 @@ fuzhou:
     access-key-secret: ${fuzhou.alioss.access-key-secret}
     bucket-name: ${fuzhou.alioss.bucket-name}
 
+  order:
+    max-quantity-per-order: 6    # 单笔订单购票数量上限
+
   # 支付模块已注释
   # alipay:
   #   app-id: ${fuzhou.alipay.app-id}
