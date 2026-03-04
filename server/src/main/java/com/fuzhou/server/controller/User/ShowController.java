@@ -12,6 +12,7 @@ import com.fuzhou.pojo.entity.Sessions;
 import com.fuzhou.server.mq.TicketOrderSender;
 import com.fuzhou.server.service.SessionsService;
 import com.fuzhou.server.service.ShowService;
+import com.fuzhou.server.mapper.OrderMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class ShowController {
 
     @Autowired
     private SessionsService sessionsService;
+
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Value("${fuzhou.order.max-quantity-per-order:6}")
     private Integer maxQuantityPerOrder;
@@ -104,6 +108,13 @@ public class ShowController {
         }
         if (userId == null) {
             return Result.error("用户未登录");
+        }
+
+        // 未支付订单数量限制：每个用户最多 5 个待支付订单
+        int maxUnpaidOrdersPerUser = 5;
+        int unpaidCount = orderMapper.countUnpaidByUserId(userId);
+        if (unpaidCount >= maxUnpaidOrdersPerUser) {
+            return Result.error("未支付订单过多，请先支付或取消已有订单");
         }
 
         // 先查库存，不足则直接返回错误，避免接口只返回“等待”而用户不知道失败
