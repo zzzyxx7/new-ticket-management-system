@@ -33,6 +33,12 @@ public interface OrderMapper {
                      @Param("userId") Long userId,
                      @Param("orderStatus") Integer orderStatus,
                      @Param("updateTime") LocalDateTime updateTime);
+
+    /**
+     * 统计某个用户的未支付订单数量
+     * 这里以 order_status = 0（待支付）为准
+     */
+    int countUnpaidByUserId(@Param("userId") Long userId);
 }
 
 

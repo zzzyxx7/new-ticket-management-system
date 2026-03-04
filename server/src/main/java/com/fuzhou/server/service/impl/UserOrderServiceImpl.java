@@ -69,6 +69,13 @@ public class UserOrderServiceImpl implements UserOrderService {
         }
         final Long currentUserId = resolvedUserId;
 
+        // 限制每个用户最多存在 5 个未支付订单
+        int maxUnpaidOrdersPerUser = 5;
+        int unpaidCount = orderMapper.countUnpaidByUserId(currentUserId);
+        if (unpaidCount >= maxUnpaidOrdersPerUser) {
+            return Result.error("未支付订单过多，请先支付或取消已有订单");
+        }
+
         String lockKey = "order:create:session:" + sessionId;
 
         return redissonLockUtil.executeWithLock(lockKey, 1, 10, () -> {

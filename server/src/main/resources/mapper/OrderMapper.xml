@@ -153,6 +153,14 @@
           AND user_id = #{userId}
     </update>
 
+    <!-- 统计某个用户的未支付订单数量（order_status = 0 视为未支付/待支付） -->
+    <select id="countUnpaidByUserId" resultType="int">
+        SELECT COUNT(*)
+        FROM `order`
+        WHERE user_id = #{userId}
+          AND order_status = 0
+    </select>
+
 </mapper>
 
 
