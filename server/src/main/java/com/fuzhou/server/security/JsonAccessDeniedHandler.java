@@ -13,7 +13,6 @@ import java.io.IOException;
 
 /**
  * 无权限时（403）统一返回 JSON 提示，避免空响应体。
- * 风格与 ticket-system / JwtAuthenticationFilter 的 sendForbiddenResponse 一致。
  */
 public class JsonAccessDeniedHandler implements AccessDeniedHandler {
 

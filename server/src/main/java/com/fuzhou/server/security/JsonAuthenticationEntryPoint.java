@@ -13,7 +13,6 @@ import java.io.IOException;
 
 /**
  * 未认证时（401）统一返回 JSON 提示，避免空响应体。
- * 风格与 ticket-system / JwtAuthenticationFilter 的 sendUnauthorizedResponse 一致。
  */
 public class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
