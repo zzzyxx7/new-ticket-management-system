@@ -242,37 +242,35 @@ public class ShowServiceImpl implements ShowService {
      * 已登录用户：优先根据IP定位返回对应地区演出
      */
     private String determineCity(String city, HttpServletRequest request) {
-        // 1. 如果传入了城市参数，优先使用
+        // 1. 如果前端主动传了城市，优先用前端的
         if (city != null && !city.trim().isEmpty()) {
-            log.info("使用手动指定的城市：{}", city);
             return city.trim();
         }
-        
-        // 2. 获取客户端IP并定位城市（已登录用户优先使用IP定位）
-        String clientIp = IpUtil.getClientIp(request);
-        log.info("客户端IP：{}", clientIp);
-        
-        String ipCity = ipLocationService.getCityByIp(clientIp);
-        if (ipCity != null && !ipCity.trim().isEmpty()) {
-            log.info("IP定位成功，城市：{}", ipCity);
-            return ipCity;
-        }
-        
-        // 3. IP定位失败，检查是否登录，使用用户地址
+
+        // 2. 先看登录状态
         Boolean isLogin = (Boolean) request.getAttribute("isLogin");
         Long loginUserId = (Long) request.getAttribute("loginUserId");
         if (isLogin == null) isLogin = false;
-        
-        if (isLogin && loginUserId != null) {
-            String userCity = userMapper.selectCityByUserId(loginUserId);
-            if (userCity != null && !userCity.trim().isEmpty()) {
-                log.info("登录用户[{}]，使用用户地址城市：{}", loginUserId, userCity);
-                return userCity;
-            }
+
+        // 3. 未登录：直接返回默认城市，不再按 IP 走
+        if (!isLogin) {
+            return "北京市";
         }
-        
-        // 4. 默认返回北京
-        log.info("IP定位失败且未设置用户地址，默认查询城市：北京市");
+
+        // 4. 已登录：才走 IP → 城市 / 用户城市 这一套
+        String clientIp = IpUtil.getClientIp(request);
+        String ipCity = ipLocationService.getCityByIp(clientIp);
+        if (ipCity != null && !ipCity.trim().isEmpty()) {
+            return ipCity.trim();
+        }
+
+        // 5. IP 定位失败，用用户资料里的城市
+        String userCity = userMapper.selectCityByUserId(loginUserId);
+        if (userCity != null && !userCity.trim().isEmpty()) {
+            return userCity.trim();
+        }
+
+        // 6. 最后兜底还是北京
         return "北京市";
     }
 
